@@ -13,17 +13,20 @@ const __dirname = path.dirname(__filename);
 app.set("view engine", "ejs");                     // Configurar EJS como motor de vistas
 app.set("views", path.join(__dirname, "views"));   // Definir la carpeta donde estarán las vistas (.ejs)
 
+// Hacer pública la carpeta "public"
+app.use(express.static(path.join(__dirname, "public")));
+
 // Importar las rutas principales
 import empleadoRoutes from './routes/empleado.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 app.use(morgan('dev'));
 app.use(express.json());
 
 // Usar las rutas
+app.get('/api', (req, res) =>  res.redirect('/api/login'));
+app.use('/api/login', authRoutes);
 app.use('/api/empleados', empleadoRoutes);
-// app.use('/api/ping', (req, res)=>{
-//    res.send("Servidor funcionando")
-// });
 
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {
