@@ -79,27 +79,27 @@ VALUES
       1,
       'carlos_admin',
       'carlos.admin@empresa.com',
-      'hashed_password_1'
+      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
    (
       1,
       'carlos.operativo',
       'carlos.operativo@empresa.com',
-      'hashed_password_2'
+      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
    -- Usuario para Laura (empleado_id = 2)
    (
       2,
       'laura_user',
       'laura.user@empresa.com',
-      'hashed_password_3'
+      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
    -- Usuario para Juan (empleado_id = 3)
    (
       3,
       'juan_david',
       'juan.david@empresa.com',
-      'hashed_password_4'
+      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    );
 
 -- Relacionar usuarios con roles

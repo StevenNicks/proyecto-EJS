@@ -1,6 +1,7 @@
 // Importar dependencias principales
 import express from 'express'
 import morgan from 'morgan';
+import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -22,11 +23,26 @@ import authRoutes from './routes/auth.routes.js';
 
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+   session({
+      secret: process.env.SESSION_SECRET, // viene del .env
+      resave: false,
+      saveUninitialized: false,
+   })
+);
 
 // Usar las rutas
-app.get('/api', (req, res) =>  res.redirect('/api/login'));
+// redirects a rutas raiz
+app.get('/', (req, res) => res.redirect('/api/login'));
+app.get('/api', (req, res) => res.redirect('/api/login'));
+
 app.use('/api/login', authRoutes);
 app.use('/api/empleados', empleadoRoutes);
+
+app.use('/api/dashboard', (req, res) => {
+   res.send('Bienvenido al Dashboard');
+});
 
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {

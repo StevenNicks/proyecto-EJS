@@ -9,6 +9,7 @@ export const renderLogin = (req, res) => {
 // Procesar login
 export const login = async (req, res) => {
    const { email, password } = req.body;
+
    try {
       // Buscar usuario por email
       const user = await UsuarioModel.getUsuarioByEmail(email);
@@ -30,15 +31,16 @@ export const login = async (req, res) => {
       }
 
       // Guardar usuario en la sesión (solo info mínima)
+      req.session.loggedin = true;
       req.session.user = {
          id: user.id,
          email: user.email,
          nombre: user.nombre,
       };
 
-      // Redirigir al dashboard
-      return res.redirect("/dashboard");
-   } catch (error) {
+      // Redirigir a empleados
+      return res.redirect("/api/empleados");
+   } catch (err) {
       console.error("Error en login:", err);
       return res.status(500).render("login", {
          title: "Login",
