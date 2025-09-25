@@ -18,8 +18,9 @@ app.set("views", path.join(__dirname, "views"));   // Definir la carpeta donde e
 app.use(express.static(path.join(__dirname, "public")));
 
 // Importar las rutas principales
-import empleadoRoutes from './routes/empleado.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import errorRoutes from './routes/error.route.js';
+import empleadoRoutes from './routes/empleado.routes.js';
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -38,6 +39,7 @@ app.get('/', (req, res) => res.redirect('/api/login'));
 app.get('/api', (req, res) => res.redirect('/api/login'));
 
 app.use('/api/login', authRoutes);
+app.use('/api/error', errorRoutes);
 app.use('/api/empleados', empleadoRoutes);
 
 app.use('/api/dashboard', (req, res) => {

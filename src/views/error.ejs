@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<%- include('partials/head') %>
+   <style>
+      @import url("https://fonts.googleapis.com/css?family=Fira+Code&display=swap");
+
+      * {
+         font-family: "Fira Code", monospace;
+      }
+   </style>
+
+   <body class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div class="text-center">
+         <div class="d-flex flex-column mb-3">
+            <h1 class="h1 fw-semibold">Error</h1>
+            <div>
+               <% 
+                  // Convertir el código de estado en un array de dígitos, con valor por defecto
+                  const statusCodeSafe = statusCode && !isNaN(statusCode) ? statusCode : 500;
+                  const statusDigits = String(statusCodeSafe).split('');
+               %>
+               <% statusDigits.forEach(digit => { %>
+                  <h1 class="d-inline-block display-1 fw-bold"><%= digit %></h1>
+               <% }); %>
+            </div>
+            <p class="lead"><%= message || 'Ocurrió un error inesperado' %></p>
+         </div>
+         <div class="d-grid gap-2">
+            <% if (statusCodeSafe === 401) { %>
+               <a href="/api/login" class="btn btn-primary w-100">Ir a Iniciar Sesión</a>
+            <% } else { %>
+               <button onclick="goBack()" class="btn btn-primary w-100">Volver Atrás</button>
+            <% } %>
+         </div>
+      </div>
+      <script>
+         function goBack() {
+            // Intentar regresar al historial
+            if (window.history.length > 1) {
+               window.history.back();
+            } else {
+               // Si no hay historial, redirigir al inicio
+               window.location.href = '/api/login';
+            }
+         }
+      </script>
+   </body>
+</html>
