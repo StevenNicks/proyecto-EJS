@@ -5,7 +5,7 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const app = express() // Crear instancia de Express
+const app = express(); // Crear instancia de Express
 
 // Obtener __dirname en módulos ES6 (ya que no está disponible por defecto)
 const __filename = fileURLToPath(import.meta.url);
@@ -14,8 +14,9 @@ const __dirname = path.dirname(__filename);
 app.set("view engine", "ejs");                     // Configurar EJS como motor de vistas
 app.set("views", path.join(__dirname, "views"));   // Definir la carpeta donde estarán las vistas (.ejs)
 
-// Hacer pública la carpeta "public"
-app.use(express.static(path.join(__dirname, "public")));
+// Configurar carpeta para archivos estáticos
+app.use(express.static(path.join(__dirname, "public")));             // app.use(express.static(path.join(src/, public)));
+app.use(express.static(path.join(__dirname, "views", "partials")));  // app.use(express.static(path.join(src/, views/, partials/)));
 
 // Importar las rutas principales
 import authRoutes from './routes/auth.routes.js';
@@ -33,12 +34,15 @@ app.use(
    })
 );
 
-// Usar las rutas
-// redirects a rutas raiz
-app.get('/', (req, res) => res.redirect('/api/login'));
-app.get('/api', (req, res) => res.redirect('/api/login'));
+// redirects de ruta raiz a login
+app.get('/', (req, res) => res.redirect('/api/auth/login'));
+app.get('/api', (req, res) => res.redirect('/api/auth/login'));
+app.get('/api/auth', (req, res) => res.redirect('/api/auth/login'));
 
-app.use('/api/login', authRoutes);
+// Usar las rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
+
 app.use('/api/error', errorRoutes);
 app.use('/api/empleados', empleadoRoutes);
 
