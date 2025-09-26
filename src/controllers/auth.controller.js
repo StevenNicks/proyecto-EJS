@@ -3,7 +3,11 @@ import UsuarioModel from '../models/authModel.js'
 
 // Renderizar vista login
 export const renderLogin = (req, res) => {
-   res.render("login", { title: "Login", error: null });
+   res.render("auth/login", { title: "Login", error: null });
+};
+
+export const renderRegister = (req, res) => {
+   res.render("auth/register", { title: "Registro", error: null });
 };
 
 // Procesar login
