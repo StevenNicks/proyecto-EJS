@@ -1,11 +1,11 @@
 import EmpleadoModel from '../models/empleadoModel.js'
 
-export const getAllEmpleados = async (req, res, next) => {
+export const renderEmpleados = async (req, res) => {
    try {
       const empleados = await EmpleadoModel.getAllEmpleados();
       // res.json(empleados[0]);
-      res.render("dashboard/index", { title: "Empleados", empleados: empleados[0] });
-   } catch (err) {
+      res.render("empleados/index", { title: "Empleados", empleados: empleados[0] });
+   } catch (error) {
       next(err); // lo manda al errorHandler
    }
-}
+};

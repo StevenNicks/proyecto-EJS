@@ -9,7 +9,7 @@
             <div class="col">
                <!-- Content here -->
                <div class="container d-flex justify-content-center align-items-center min-vh-100">
-                  <div class="row border rounded-5 p-3 bg-white shadow box-area" style="min-height: 500px;">
+                  <div class="row border rounded-5 p-3 bg-white shadow box-area" style="min-height: 520px;">
                      <div
                         class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
                         style="background: #099584;">
@@ -22,20 +22,32 @@
                         </small>
                      </div>
                      <div class="col-md-6 right-box">
-                        <form action="/api/auth/login" method="POST"
-                           class="d-flex justify-content-between flex-column h-100">
+                        <form id="loginForm" action="/api/auth/login" method="POST"
+                           class="d-flex justify-content-between flex-column h-100 needs-validation" novalidate>
                            <div class="d-flex flex-column">
                               <div class="header-text mb-3 text-start">
                                  <h2 class="fw-bold">Hola de nuevo!</h2>
                                  <p class="mb-0">Nos alegramos de tenerte de vuelta.</p>
                               </div>
+                              <!-- Nombre -->
+                              <div class="input-group mb-3">
+                                 <input type="text" class="form-control form-control-lg bg-light fs-6" disabled readonly
+                                    style="border-color: transparent;">
+                              </div>
+                              <!-- Correo -->
                               <div class="input-group mb-3">
                                  <input type="text" class="form-control form-control-lg bg-light fs-6"
                                     placeholder="Correo electrónico" name="email" autocomplete="username" required>
                               </div>
+                              <!-- Contraseña -->
                               <div class="input-group mb-3">
                                  <input type="password" class="form-control form-control-lg bg-light fs-6"
                                     placeholder="Contraseña" name="password" autocomplete="current-password" required>
+                              </div>
+                              <!-- Confirmar contraseña -->
+                              <div class="input-group mb-3">
+                                 <input class="form-control form-control-lg bg-light fs-6" disabled readonly
+                                    style="border-color: transparent;">
                               </div>
                            </div>
                            <div class="d-flex flex-column">
@@ -57,6 +69,50 @@
          </div>
       </div>
       <%- include('../partials/scripts') %>
+         <script>
+            $(document).ready(function () {
+               validarFormulario("#loginForm",
+                  function (form) {
+                     const email = $(form).find("input[name='email']").val().trim();
+                     const password = $(form).find("input[name='password']").val().trim();
+                     const $submitBtn = $(form).find("button[type='submit']");
+
+                     $.ajax({
+                        url: "/api/auth/login",
+                        type: "POST",
+                        data: { email, password },
+                        beforeSend: function () {
+                           // Deshabilitar botón y mostrar estado
+                           $submitBtn.prop("disabled", true).text("Cargando...");
+                        }
+                     })
+                        .done(function (response) {
+                           console.log("✅ Respuesta del servidor:", response);
+
+                           if (response.success) {
+                              alert("Inicio de sesión exitoso 🎉");
+                              window.location.href = "/api/empleados"; // Redirige a dashboard
+                           } else {
+                              alert("⚠️ " + response.message);
+                           }
+                        })
+                        .fail(function (xhr, status, error) {
+                           console.error("❌ Error AJAX:", status, error);
+                           alert("Hubo un error en el servidor. Intenta de nuevo.");
+                        })
+                        .always(function () {
+                           // Restaurar botón
+                           $submitBtn.prop("disabled", false).text("Iniciar sesión");
+                        });
+                  },
+                  function (form) {
+                     console.warn("⚠️ El formulario no es válido.");
+                     // Aquí podrías mostrar un toast en lugar de alert
+                  }
+               );
+            });
+         </script>
+
    </body>
 
 </html>

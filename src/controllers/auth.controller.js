@@ -43,7 +43,9 @@ export const login = async (req, res) => {
       };
 
       // Redirigir a empleados
-      return res.redirect("/api/empleados");
+      // return res.redirect("/api/empleados");
+      res.json({ success: true, message: "Login correcto" });
+
    } catch (err) {
       console.error("Error en login:", err);
       return res.status(500).render("login", {

@@ -40,7 +40,6 @@ app.get('/api/auth', (req, res) => res.redirect('/api/auth/login'));
 
 // Usar las rutas
 app.use('/api/auth', authRoutes);
-app.use('/api/auth', authRoutes);
 
 app.use('/api/error', errorRoutes);
 app.use('/api/empleados', empleadoRoutes);

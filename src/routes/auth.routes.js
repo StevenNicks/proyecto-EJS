@@ -4,7 +4,8 @@ import { renderLogin, login, renderRegister } from "../controllers/auth.controll
 const router = Router();
 
 router.get("/login", renderLogin);
+router.post("/login", login);
+
 router.get("/register", renderRegister);
-router.post("/", login);
 
 export default router;

@@ -9,7 +9,7 @@
             <div class="col">
                <!-- Content here -->
                <div class="container d-flex justify-content-center align-items-center min-vh-100">
-                  <div class="row border rounded-5 p-3 bg-white shadow box-area" style="min-height: 500px;">
+                  <div class="row border rounded-5 p-3 bg-white shadow box-area" style="min-height: 520px;">
                      <div
                         class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box"
                         style="background: #099584;">
@@ -24,31 +24,26 @@
                      <div class="col-md-6 right-box">
                         <form action="/api/auth/register" method="POST"
                            class="d-flex justify-content-between flex-column h-100">
-
                            <div class="d-flex flex-column">
                               <div class="header-text mb-3 text-start">
-                                 <h2 class="fw-bold">Crea tu cuenta</h2>
+                                 <h2 class="fw-bold">Crea tu cuenta.</h2>
                                  <p class="mb-0">Regístrate para empezar a usar la plataforma.</p>
                               </div>
-
                               <!-- Nombre -->
                               <div class="input-group mb-3">
                                  <input type="text" class="form-control form-control-lg bg-light fs-6"
                                     placeholder="Nombre completo" name="name" autocomplete="name" required>
                               </div>
-
                               <!-- Correo -->
                               <div class="input-group mb-3">
                                  <input type="email" class="form-control form-control-lg bg-light fs-6"
                                     placeholder="Correo electrónico" name="email" autocomplete="email" required>
                               </div>
-
                               <!-- Contraseña -->
                               <div class="input-group mb-3">
                                  <input type="password" class="form-control form-control-lg bg-light fs-6"
                                     placeholder="Contraseña" name="password" autocomplete="new-password" required>
                               </div>
-
                               <!-- Confirmar contraseña -->
                               <div class="input-group mb-3">
                                  <input type="password" class="form-control form-control-lg bg-light fs-6"
@@ -56,7 +51,6 @@
                                     required>
                               </div>
                            </div>
-
                            <div class="d-flex flex-column">
                               <!-- Botón de registro -->
                               <div class="input-group mb-3">
@@ -65,14 +59,12 @@
                                     Regístrate
                                  </button>
                               </div>
-
                               <!-- Enlace al login -->
                               <div class="row">
                                  <small>¿Ya tienes cuenta? <a href="/api/auth/login">Inicia sesión</a></small>
                               </div>
                            </div>
                         </form>
-
                      </div>
                   </div>
                </div>
@@ -80,6 +72,9 @@
          </div>
       </div>
       <%- include('../partials/scripts') %>
+      <script>
+         
+      </script>
    </body>
 
 </html>
