@@ -11,7 +11,7 @@ export const renderRegister = (req, res) => {
 };
 
 // Procesar login
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
    const { email, password } = req.body;
 
    try {
@@ -19,19 +19,13 @@ export const login = async (req, res) => {
       const user = await UsuarioModel.getUsuarioByEmail(email);
 
       if (!user) {
-         return res.render("login", {
-            title: "Login",
-            error: "Usuario no encontrado",
-         });
+         return res.status(200).json({ success: false, message: "Usuario no encontrado" });
       }
 
       // Comparar contraseña ingresada con la almacenada
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-         return res.render("login", {
-            title: "Login",
-            error: "Contraseña incorrecta",
-         });
+         return res.status(200).json({ success: false, message: "Contraseña incorrecta" });
       }
 
       // Guardar usuario en la sesión (solo info mínima)
@@ -42,15 +36,18 @@ export const login = async (req, res) => {
          nombre: user.nombre,
       };
 
-      // Redirigir a empleados
-      // return res.redirect("/api/empleados");
-      res.json({ success: true, message: "Login correcto" });
+      // Respuesta JSON con datos del usuario
+      res.status(200).json({
+         success: true,
+         message: "Inicio de sesión exitoso",
+         user: {
+            id: user.id,
+            email: user.email,
+            nombre: user.nombre,
+         }
+      });
 
    } catch (err) {
-      console.error("Error en login:", err);
-      return res.status(500).render("login", {
-         title: "Login",
-         error: "Error en el servidor",
-      });
+      next(err); // Pasar el error al middleware de manejo de errores
    }
 }
