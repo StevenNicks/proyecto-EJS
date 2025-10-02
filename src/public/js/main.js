@@ -27,3 +27,17 @@ function validarFormulario(formId) {
    form.classList.add('was-validated');
    return true; // Formulario válido
 }
+
+// Configuración de un "toast" con SweetAlert2
+const Toast = Swal.mixin({
+   toast: true,               // Tipo notificación flotante
+   position: "top-end",       // Se muestra arriba a la derecha
+   showConfirmButton: false,  // Sin botón de confirmación
+   timer: 3000,               // Dura 3 segundos
+   timerProgressBar: true,    // Con barra de progreso
+   didOpen: (toast) => {
+      // Pausa y reanuda el temporizador al pasar/quitar el mouse
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+   }
+});
