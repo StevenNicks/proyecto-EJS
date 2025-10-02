@@ -7,7 +7,6 @@
       <div class="container text-center">
          <div class="row">
             <div class="col">
-               <!-- Content here -->
                <div class="container d-flex justify-content-center align-items-center min-vh-100">
                   <div class="row border rounded-5 p-3 bg-white shadow box-area" style="min-height: 520px;">
                      <div
@@ -22,7 +21,7 @@
                         </small>
                      </div>
                      <div class="col-md-6 right-box">
-                        <form action="/api/auth/register" method="POST"
+                        <form id="registerForm" action="/api/auth/register" method="POST"
                            class="d-flex justify-content-between flex-column h-100">
                            <div class="d-flex flex-column">
                               <div class="header-text mb-3 text-start">
@@ -72,9 +71,25 @@
          </div>
       </div>
       <%- include('../partials/scripts') %>
-      <script>
-         
-      </script>
+         <script>
+            $(document).on("submit", "#registerForm", function (e) {
+               e.preventDefault();
+
+               if (validarFormulario(this.id)) {
+                  console.log("✅ Formulario válido");
+
+                  $.ajax({
+                     url: $(this).attr("action"),
+                     method: $(this).attr("method"),
+                     data: $(this).serialize(),
+                  }).done(function (response) {
+                     console.log(response);
+                  });
+               } else {
+                  console.log("❌ Formulario inválido");
+               }
+            });
+         </script>
    </body>
 
 </html>

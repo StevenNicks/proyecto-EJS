@@ -8,8 +8,7 @@ CREATE TABLE
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
    );
 
--- Tabla: empleados (1 empleado puede tener muchos usuarios)
--- Crear tabla empleados con nombres/apellidos separados
+-- Tabla: empleados
 CREATE TABLE
    empleados (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,30 +21,32 @@ CREATE TABLE
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
    );
 
--- Tabla: usuarios (cada usuario pertenece a un solo empleado)
+-- Tabla: usuarios
 CREATE TABLE
    usuarios (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      empleado_id INT NOT NULL,
       nombre VARCHAR(100) NOT NULL,
       email VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      FOREIGN KEY (empleado_id) REFERENCES empleados (id) ON DELETE CASCADE ON UPDATE CASCADE
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
    );
 
--- Tabla pivote: usuario_rol (para la relación N:M entre usuarios y roles)
+-- Tabla intermedia: relaciona usuarios, empleados y roles
 CREATE TABLE
-   usuario_rol (
+   usuario_empleado_rol (
       id INT AUTO_INCREMENT PRIMARY KEY,
       usuario_id INT NOT NULL,
+      empleado_id INT NOT NULL,
       rol_id INT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      -- Claves foráneas
       FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (empleado_id) REFERENCES empleados (id) ON DELETE CASCADE ON UPDATE CASCADE,
       FOREIGN KEY (rol_id) REFERENCES roles (id) ON DELETE CASCADE ON UPDATE CASCADE,
-      UNIQUE KEY (usuario_id, rol_id) -- evita duplicar roles en un usuario
+      -- Evita duplicados (ej: un usuario no puede tener el mismo rol dos veces para el mismo empleado)
+      UNIQUE KEY (usuario_id, empleado_id, rol_id)
    );
 
 -- Insertar roles básicos
@@ -70,48 +71,37 @@ VALUES
    ('987654321', 'Laura', NULL, 'Martínez', 'Pérez'),
    ('456789123', 'Juan', 'David', 'Rodríguez', NULL);
 
--- Insertar usuarios (relacionados con los empleados anteriores)
+-- Insertar usuarios
 INSERT INTO
-   usuarios (empleado_id, nombre, email, password)
+   usuarios (nombre, email, password)
 VALUES
-   -- Usuarios para Carlos (empleado_id = 1)
    (
-      1,
       'carlos_admin',
       'carlos.admin@empresa.com',
       '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
    (
-      1,
       'carlos.operativo',
       'carlos.operativo@empresa.com',
       '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
-   -- Usuario para Laura (empleado_id = 2)
    (
-      2,
       'laura_user',
       'laura.user@empresa.com',
       '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    ),
-   -- Usuario para Juan (empleado_id = 3)
    (
-      3,
       'juan_david',
       'juan.david@empresa.com',
       '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    );
 
--- Relacionar usuarios con roles
 INSERT INTO
-   usuario_rol (usuario_id, rol_id)
+   usuario_empleado_rol (usuario_id, empleado_id, rol_id)
 VALUES
-   -- Carlos Admin -> admin y supervisor
-   (1, 1),
-   (1, 3),
-   -- Carlos Operativo -> empleado
-   (2, 2),
-   -- Laura -> admin
-   (3, 1),
-   -- Juan -> empleado
-   (4, 2);
+   -- Usuario 1 (Empleado 1) con rol Admin
+   (1, 1, 1),
+   -- Usuario 2 (Empleado 1) con rol Supervisor
+   (2, 1, 2),
+   -- Usuario 3 (Empleado 2) con rol Supervisor
+   (3, 2, 2);

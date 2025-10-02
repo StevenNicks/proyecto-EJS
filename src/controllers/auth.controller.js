@@ -1,53 +1,91 @@
 import bcrypt from "bcrypt";
 import UsuarioModel from '../models/authModel.js'
 
-// Renderizar vista login
+/**
+ * Renderiza la vista del formulario de inicio de sesión.
+ *
+ * @function renderLogin
+ * @param {object} req - Objeto de solicitud HTTP (Express).
+ * @param {object} res - Objeto de respuesta HTTP (Express) utilizado para renderizar la vista.
+ *
+ * @description
+ * Carga la plantilla `auth/login` y establece el título de la página.
+ */
 export const renderLogin = (req, res) => {
-   res.render("auth/login", { title: "Login", error: null });
+   res.render("auth/login", { title: "Login" });
 };
 
-export const renderRegister = (req, res) => {
-   res.render("auth/register", { title: "Registro", error: null });
-};
-
-// Procesar login
+/**
+ * Controlador para el inicio de sesión de usuarios.
+ *
+ * @async
+ * @function login
+ * @param {object} req - Objeto de solicitud HTTP (Express), debe contener `email` y `password` en `req.body`.
+ * @param {object} res - Objeto de respuesta HTTP (Express), utilizado para enviar la respuesta JSON.
+ * @param {function} next - Middleware personalizado para manejar errores.
+ *
+ * @description
+ * Este controlador:
+ *  1. Busca el usuario en la base de datos a partir del email.
+ *  2. Verifica la contraseña ingresada comparándola con el hash almacenado usando `bcrypt`.
+ *  3. Si las credenciales son correctas, guarda datos mínimos en la sesión (`req.session`) y responde con JSON.
+ *  4. Si ocurre un error, lo delega al middleware centralizado de errores mediante `next(err)`.
+ */
 export const login = async (req, res, next) => {
    const { email, password } = req.body;
 
    try {
-      // Buscar usuario por email
+      // 1. Buscar usuario por email
       const user = await UsuarioModel.getUsuarioByEmail(email);
 
       if (!user) {
+         // Si el usuario no existe, responder sin éxito
          return res.status(200).json({ success: false, message: "Usuario no encontrado" });
       }
 
-      // Comparar contraseña ingresada con la almacenada
+      // 2. Comparar contraseña ingresada con la almacenada (hash bcrypt)
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
+         // Si la contraseña no coincide, responder sin éxito
          return res.status(200).json({ success: false, message: "Contraseña incorrecta" });
       }
 
-      // Guardar usuario en la sesión (solo info mínima)
+      // 3. Guardar usuario en la sesión (solo información mínima)
       req.session.loggedin = true;
       req.session.user = {
          id: user.id,
+         nombre: user.usuario,
          email: user.email,
-         nombre: user.nombre,
+         rol: user.rol,
       };
 
-      // Respuesta JSON con datos del usuario
+      // 4. Respuesta JSON con los datos del usuario autenticado
       res.status(200).json({
          success: true,
          message: "Inicio de sesión exitoso",
-         user: {
-            id: user.id,
-            email: user.email,
-            nombre: user.nombre,
-         }
+         // user: user
       });
 
    } catch (err) {
-      next(err); // Pasar el error al middleware de manejo de errores
+      // 5. Pasar cualquier error inesperado al middleware de errores
+      next(err);
    }
+}
+
+/**
+ * Renderiza la vista del formulario de registro de usuarios.
+ *
+ * @function renderRegister
+ * @param {object} req - Objeto de solicitud HTTP (Express).
+ * @param {object} res - Objeto de respuesta HTTP (Express) utilizado para renderizar la vista.
+ *
+ * @description
+ * Carga la plantilla `auth/register` y establece el título de la página en "Registro".
+ */
+export const renderRegister = (req, res) => {
+   res.render("auth/register", { title: "Registro" });
+};
+
+export const register = async (req, res, next) => {
+   res.send("Registro de usuarios - Próximamente");
 }
