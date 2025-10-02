@@ -67,41 +67,21 @@ INSERT INTO
       segundo_apellido
    )
 VALUES
-   ('123456789', 'Carlos', 'Andrés', 'Gómez', 'López'),
-   ('987654321', 'Laura', NULL, 'Martínez', 'Pérez'),
-   ('456789123', 'Juan', 'David', 'Rodríguez', NULL);
+   ('1143994968', 'Steven', NULL, 'ALVARADO', 'PAEZ');
 
 -- Insertar usuarios
 INSERT INTO
    usuarios (nombre, email, password)
 VALUES
    (
-      'carlos_admin',
-      'carlos.admin@empresa.com',
-      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
-   ),
-   (
-      'carlos.operativo',
-      'carlos.operativo@empresa.com',
-      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
-   ),
-   (
-      'laura_user',
-      'laura.user@empresa.com',
-      '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
-   ),
-   (
-      'juan_david',
-      'juan.david@empresa.com',
+      'steven alvarado paez',
+      'stevenalvaradopaez@gmail.com',
       '$2a$12$0oxFNNOLCx1w7IK3SPMTfea7fnYq25/Yg7NU4RfZqQmxX2pydztMy'
    );
 
+-- Insertar relacion usuario + empleado + rol
 INSERT INTO
    usuario_empleado_rol (usuario_id, empleado_id, rol_id)
 VALUES
    -- Usuario 1 (Empleado 1) con rol Admin
-   (1, 1, 1),
-   -- Usuario 2 (Empleado 1) con rol Supervisor
-   (2, 1, 2),
-   -- Usuario 3 (Empleado 2) con rol Supervisor
-   (3, 2, 2);
+   (1, 1, 1);

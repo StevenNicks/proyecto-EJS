@@ -22,7 +22,7 @@
                         </small>
                      </div>
                      <div class="col-md-6 right-box">
-                        <form id="loginForm" action="/api/auth/login" method="POST"
+                        <form id="loginForm" action="/auth/login" method="POST"
                            class="d-flex justify-content-between flex-column h-100 needs-validation" novalidate>
                            <div class="d-flex flex-column">
                               <div class="header-text mb-3 text-start">
@@ -58,7 +58,7 @@
                                  </button>
                               </div>
                               <div class="row">
-                                 <small>¿No tienes cuenta? <a href="/api/auth/register">Regístrate</a></small>
+                                 <small>¿No tienes cuenta? <a href="/auth/register">Regístrate</a></small>
                               </div>
                            </div>
                         </form>
@@ -73,6 +73,8 @@
             $(document).on("submit", "#loginForm", function (e) {
                e.preventDefault();
 
+               const $submitBtn = $(this).find('button[type="submit"]');
+
                if (validarFormulario(this.id)) {
                   console.log("✅ Formulario válido");
 
@@ -80,9 +82,13 @@
                      url: $(this).attr("action"),
                      method: $(this).attr("method"),
                      data: $(this).serialize(),
+                     beforeSend: function () {
+                        // Desactivar el botón antes de enviar
+                        $submitBtn.prop('disabled', true).text('Procesando...');
+                     }
                   }).done(function (response) {
                      if (response.success) {
-                        window.location.href = "/api/empleados";
+                        window.location.href = "/empleados";
                      } else {
                         console.log("❌", response.message);
                         Toast.fire({
@@ -90,6 +96,9 @@
                            title: response.message
                         });
                      }
+                  }).always(function () {
+                     // Volver a activar el botón después de terminar
+                     $submitBtn.prop('disabled', false).text('Iniciar sesión');
                   });
                } else {
                   console.log("❌ Formulario inválido");

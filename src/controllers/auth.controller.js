@@ -87,5 +87,45 @@ export const renderRegister = (req, res) => {
 };
 
 export const register = async (req, res, next) => {
-   res.send("Registro de usuarios - Próximamente");
+   const { name, email, password, confirmPassword } = req.body;
+
+   if (!name || !email || !password || !confirmPassword) {
+      return res.status(200).json({ success: false, message: "Todos los campos son obligatorios" });
+   }
+
+   if (password !== confirmPassword) {
+      return res.status(400).json({ success: false, message: "Las contraseñas no coinciden" });
+   }
+
+   try {
+      const user = await UsuarioModel.getUsuarioByEmail(email);
+      if (user) {
+         return res.status(200).json({ success: false, message: "El email ya está en uso" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = {
+         nombre: name,
+         email,
+         password: hashedPassword,
+      };
+
+
+      const result = await UsuarioModel.createUsuario(newUser);
+      // Verificamos userId en lugar de affectedRows
+      if (result.userId) {
+         return res.status(201).json({
+            success: true,
+            message: "Usuario registrado exitosamente",
+            userId: result.userId
+         });
+      } else {
+         return res.status(500).json({
+            success: false,
+            message: "No se pudo registrar el usuario"
+         });
+      }
+   } catch (error) {
+      next(error);
+   }
 }

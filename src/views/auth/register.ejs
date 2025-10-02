@@ -21,7 +21,7 @@
                         </small>
                      </div>
                      <div class="col-md-6 right-box">
-                        <form id="registerForm" action="/api/auth/register" method="POST"
+                        <form id="registerForm" action="/auth/register" method="POST"
                            class="d-flex justify-content-between flex-column h-100">
                            <div class="d-flex flex-column">
                               <div class="header-text mb-3 text-start">
@@ -60,7 +60,7 @@
                               </div>
                               <!-- Enlace al login -->
                               <div class="row">
-                                 <small>¿Ya tienes cuenta? <a href="/api/auth/login">Inicia sesión</a></small>
+                                 <small>¿Ya tienes cuenta? <a href="/auth/login">Inicia sesión</a></small>
                               </div>
                            </div>
                         </form>
@@ -75,6 +75,18 @@
             $(document).on("submit", "#registerForm", function (e) {
                e.preventDefault();
 
+               const password = $(this).find('input[name="password"]').val();
+               const confirmPassword = $(this).find('input[name="confirmPassword"]').val();
+               const $submitBtn = $(this).find('button[type="submit"]');
+
+               if (password !== confirmPassword) {
+                  Toast.fire({
+                     icon: "error",
+                     title: "Las contraseñas no coinciden"
+                  });
+                  return;
+               }
+
                if (validarFormulario(this.id)) {
                   console.log("✅ Formulario válido");
 
@@ -82,11 +94,42 @@
                      url: $(this).attr("action"),
                      method: $(this).attr("method"),
                      data: $(this).serialize(),
+                     beforeSend: function () {
+                        // Desactivar el botón antes de enviar
+                        $submitBtn.prop('disabled', true).text('Registrando...');
+                     }
                   }).done(function (response) {
                      console.log(response);
+                     
+                     if (response.success) {
+                        console.log("✅", response.message);
+
+                        Toast.fire({
+                           icon: "success",
+                           title: response.message
+                        });
+
+                        setTimeout(() => {
+                           window.location.href = "/auth/login"; // Redirigir al login después de 3 segundos
+                        }, 3000); // 3000 ms = 3 segundos
+                     } else {
+                        console.log("❌", response.message);
+                        Toast.fire({
+                           icon: "error",
+                           title: response.message
+                        });
+                     }
+                  }).always(function () {
+                     // Volver a activar el botón después de terminar
+                     $submitBtn.prop('disabled', false).text('Registrarse');
                   });
                } else {
                   console.log("❌ Formulario inválido");
+                  Toast.fire({
+                     icon: "error",
+                     title: "Formulario inválido",
+                     text: "Por favor, completa todos los campos requeridos."
+                  });
                }
             });
          </script>

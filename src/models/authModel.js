@@ -11,12 +11,20 @@ const UsuarioModel = {
    },
 
    /**
-    * Obtiene un usuario por su email.
-    * @param {string} email - Email del usuario.
-    * @returns {Promise<Object>|null} - Devuelve una promesa con el usuario encontrado o null.
+    * Obtiene un usuario junto con su información de empleado y rol a partir de su email.
+    *
+    * @param {string} email - Email del usuario a buscar.
+    * @returns {Promise<Object|null>} - Promesa que resuelve en un objeto con los campos:
+    *   - id: ID del usuario
+    *   - usuario: nombre del usuario
+    *   - email: email del usuario
+    *   - password: contraseña hasheada
+    *   - cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido: datos del empleado
+    *   - rol_id: ID del rol
+    *   - rol: nombre del rol
+    *   Devuelve `null` si no se encuentra ningún usuario.
     */
    getUsuarioByEmail: async (email) => {
-      // const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
       const [rows] = await pool.query(
          `SELECT 
             u.id,
@@ -39,6 +47,36 @@ const UsuarioModel = {
 
       return rows.length > 0 ? rows[0] : null;
    },
+
+   createUsuario: async ({ nombre, email, password }) => {
+      const connection = await pool.getConnection(); // usamos transacción
+      try {
+         await connection.beginTransaction();
+
+         // 1️. Insertar en usuarios
+         const [result] = await connection.query(
+            `INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)`,
+            [nombre, email, password]
+         );
+         const userId = result.insertId;
+
+         // 2️. Insertar en usuario_empleado_rol
+         await connection.query(
+            `INSERT INTO usuario_empleado_rol (usuario_id, empleado_id, rol_id) VALUES (?, ?, ?)`,
+            [userId, null, 2]
+         );
+
+         await connection.commit();
+         return { userId }; // retornamos el ID del usuario
+
+      } catch (error) {
+         await connection.rollback();  // ⚠️ si falla algo aquí, se deshace todo
+         throw error;
+      } finally {
+         connection.release();
+      }
+   }
 };
 
 export default UsuarioModel;
+// return result;
