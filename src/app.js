@@ -11,11 +11,11 @@ const app = express(); // Crear instancia de Express
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.set("view engine", "ejs");                     // Configurar EJS como motor de vistas
-app.set("views", path.join(__dirname, "views"));   // Definir la carpeta donde estarán las vistas (.ejs)
+app.set("view engine", "ejs");                           // Configurar EJS como motor de vistas
+app.set("views", path.join(__dirname, "views"));         // Definir la carpeta donde estarán las vistas (.ejs)
 
 // Configurar carpeta para archivos estáticos
-app.use(express.static(path.join(__dirname, "public")));             // app.use(express.static(path.join(src/, public)));
+app.use(express.static(path.join(__dirname, "public"))); // app.use(express.static(path.join(src/, public)));
 
 // Importar las rutas principales
 import authRoutes from './routes/auth.routes.js';
@@ -34,19 +34,14 @@ app.use(
 );
 
 // redirects de ruta raiz a login
-app.get('/', (req, res) => res.redirect('/api/auth/login'));
-app.get('/api', (req, res) => res.redirect('/api/auth/login'));
-app.get('/api/auth', (req, res) => res.redirect('/api/auth/login'));
+app.get('/', (req, res) => res.redirect('/auth/login'));
+app.get('/auth', (req, res) => res.redirect('/auth/login'));
 
 // Usar las rutas
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+app.use('/empleados', empleadoRoutes);
 
-app.use('/api/error', errorRoutes);
-app.use('/api/empleados', empleadoRoutes);
-
-app.use('/api/dashboard', (req, res) => {
-   res.send('Bienvenido al Dashboard');
-});
+app.use('/error', errorRoutes);
 
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {
