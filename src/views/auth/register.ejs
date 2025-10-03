@@ -2,6 +2,21 @@
 <html lang="en">
 <%- include('../partials/head') %>
    <link rel="stylesheet" href="/css/login.css">
+   <style>
+      /* Chrome, Safari, Edge, Opera */
+      input.no-arrow::-webkit-outer-spin-button,
+      input.no-arrow::-webkit-inner-spin-button {
+         -webkit-appearance: none;
+         margin: 0;
+      }
+
+      /* Firefox */
+      input.no-arrow[type=number] {
+         -moz-appearance: textfield;
+         appearance: textfield;
+         /* estándar */
+      }
+   </style>
 
    <body>
       <div class="container text-center">
@@ -28,10 +43,11 @@
                                  <h2 class="fw-bold">Crea tu cuenta.</h2>
                                  <p class="mb-0">Regístrate para empezar a usar la plataforma.</p>
                               </div>
-                              <!-- Nombre -->
+                              <!-- Cedula -->
                               <div class="input-group mb-3">
-                                 <input type="text" class="form-control form-control-lg bg-light fs-6"
-                                    placeholder="Nombre completo" name="name" autocomplete="name" required>
+                                 <input type="number" class="form-control form-control-lg bg-light fs-6 no-arrow"
+                                    placeholder="Nuemero de cedula" name="cedula" autocomplete="cedula" min="1000000"
+                                    max="9999999999" autofocus required>
                               </div>
                               <!-- Correo -->
                               <div class="input-group mb-3">
@@ -87,50 +103,36 @@
                   return;
                }
 
-               if (validarFormulario(this.id)) {
-                  console.log("✅ Formulario válido");
+               $.ajax({
+                  url: $(this).attr("action"),
+                  method: $(this).attr("method"),
+                  data: $(this).serialize(),
+                  beforeSend: function () {
+                     // Desactivar el botón antes de enviar
+                     $submitBtn.prop('disabled', true).text('Registrando...');
+                  }
+               }).done(function (response) {
+                  // console.log(response);
 
-                  $.ajax({
-                     url: $(this).attr("action"),
-                     method: $(this).attr("method"),
-                     data: $(this).serialize(),
-                     beforeSend: function () {
-                        // Desactivar el botón antes de enviar
-                        $submitBtn.prop('disabled', true).text('Registrando...');
-                     }
-                  }).done(function (response) {
-                     console.log(response);
-                     
-                     if (response.success) {
-                        console.log("✅", response.message);
+                  if (response.success) {
+                     Toast.fire({
+                        icon: "success",
+                        title: response.message
+                     });
 
-                        Toast.fire({
-                           icon: "success",
-                           title: response.message
-                        });
-
-                        setTimeout(() => {
-                           window.location.href = "/auth/login"; // Redirigir al login después de 3 segundos
-                        }, 3000); // 3000 ms = 3 segundos
-                     } else {
-                        console.log("❌", response.message);
-                        Toast.fire({
-                           icon: "error",
-                           title: response.message
-                        });
-                     }
-                  }).always(function () {
-                     // Volver a activar el botón después de terminar
-                     $submitBtn.prop('disabled', false).text('Registrarse');
-                  });
-               } else {
-                  console.log("❌ Formulario inválido");
-                  Toast.fire({
-                     icon: "error",
-                     title: "Formulario inválido",
-                     text: "Por favor, completa todos los campos requeridos."
-                  });
-               }
+                     setTimeout(() => {
+                        window.location.href = "/auth/login"; // Redirigir al login después de 3 segundos
+                     }, 3000); // 3000 ms = 3 segundos
+                  } else {
+                     Toast.fire({
+                        icon: "error",
+                        title: response.message
+                     });
+                  }
+               }).always(function () {
+                  // Volver a activar el botón después de terminar
+                  $submitBtn.prop('disabled', false).text('Registrarse');
+               });
             });
          </script>
    </body>
