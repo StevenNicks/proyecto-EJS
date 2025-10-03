@@ -23,26 +23,27 @@ const UsuarioModel = {
    */
    getUsuarioByEmail: async (email) => {
       try {
-         const [rows] = await pool.query(
-            `SELECT 
-               u.id,
-               u.nombre AS usuario,
-               u.email,
-               u.password,
-               u.rol_id,
-               r.nombre AS rol,
-               e.cedula,
-               e.primer_nombre,
-               e.segundo_nombre,
-               e.primer_apellido,
-               e.segundo_apellido
-               FROM usuarios u
-               LEFT JOIN roles r ON u.rol_id = r.id
-               LEFT JOIN usuario_empleado ue ON u.id = ue.usuario_id
-               LEFT JOIN empleados e ON ue.empleado_id = e.id
-               WHERE u.email = ?`,
-            [email]
-         );
+         const [rows] = await pool.query(`SELECT * FROM usuarios WHERE email = ?`, [email]);
+         // const [rows] = await pool.query(
+         //    `SELECT 
+         //       u.id,
+         //       u.nombre AS usuario,
+         //       u.email,
+         //       u.password,
+         //       u.rol_id,
+         //       r.nombre AS rol,
+         //       e.cedula,
+         //       e.primer_nombre,
+         //       e.segundo_nombre,
+         //       e.primer_apellido,
+         //       e.segundo_apellido
+         //       FROM usuarios u
+         //       LEFT JOIN roles r ON u.rol_id = r.id
+         //       LEFT JOIN usuario_empleado ue ON u.id = ue.usuario_id
+         //       LEFT JOIN empleados e ON ue.empleado_id = e.id
+         //       WHERE u.email = ?`,
+         //    [email]
+         // );
          return rows.length > 0 ? rows[0] : null;
       } catch (error) {
          throw error;
@@ -59,11 +60,11 @@ const UsuarioModel = {
    * @throws {Error} Error de base de datos (ej. email duplicado).
    * @note Validaciones en controlador; rol_id usa DEFAULT 2.
    */
-   createUsuario: async ({ nombre, email, password }) => {
+   createUsuario: async ({ cedula, email, password }) => {
       try {
          const [result] = await pool.query(
-            `INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)`,
-            [nombre, email, password]
+            `INSERT INTO usuarios (empleado_cedula, email, password) VALUES (?, ?, ?)`,
+            [cedula, email, password]
          );
          return { userId: result.insertId };
       } catch (error) {
