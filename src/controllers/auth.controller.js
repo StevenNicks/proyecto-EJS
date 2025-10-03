@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import UsuarioModel from '../models/authModel.js'
+import UsuarioModel from '../models/usuarioModel.js'
 
 /**
  * Renderiza la vista del formulario de inicio de sesión.
@@ -104,27 +104,14 @@ export const register = async (req, res, next) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = {
-         nombre: name,
-         email,
-         password: hashedPassword,
-      };
+      const newUser = { nombre: name, email, password: hashedPassword };
 
-
-      const result = await UsuarioModel.createUsuario(newUser);
-      // Verificamos userId en lugar de affectedRows
-      if (result.userId) {
-         return res.status(201).json({
-            success: true,
-            message: "Usuario registrado exitosamente",
-            userId: result.userId
-         });
-      } else {
-         return res.status(500).json({
-            success: false,
-            message: "No se pudo registrar el usuario"
-         });
-      }
+      const { userId } = await UsuarioModel.createUsuario(newUser);
+      return res.status(201).json({
+         success: true,
+         message: 'Usuario registrado exitosamente',
+         userId
+      });
    } catch (error) {
       next(error);
    }
