@@ -27,7 +27,7 @@
          </div>
          <div class="d-grid gap-2">
             <% if (statusCodeSafe === 401) { %>
-               <a href="/api/auth/login" class="btn btn-primary w-100">Iniciar Sesión</a>
+               <a href="/auth/login" class="btn btn-primary w-100">Iniciar Sesión</a>
             <% } else { %>
                <button onclick="goBack()" class="btn btn-primary w-100">Volver Atrás</button>
             <% } %>
@@ -40,7 +40,7 @@
                window.history.back();
             } else {
                // Si no hay historial, redirigir al inicio
-               window.location.href = '/api/auth/login';
+               window.location.href = '/auth/login';
             }
          }
       </script>
