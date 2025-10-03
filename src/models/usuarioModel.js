@@ -3,7 +3,7 @@ import { pool } from '../config/db.js';
 const UsuarioModel = {
    /**
    * Obtiene todos los usuarios de la base de datos.
-   * @returns {Promise<Array<Object>>} Arreglo con usuarios (id, nombre, email, password, rol_id, created_at, updated_at).
+   * @returns {Promise<Array<Object>>} Arreglo con usuarios
    * @throws {Error} Error de base de datos.
    */
    getAllUsuarios: async () => {
@@ -69,7 +69,27 @@ const UsuarioModel = {
       } catch (error) {
          throw error;
       }
-   }
+   },
+
+   /**
+   * Actualiza el empleado_id en la tabla usuario_empleado para un usuario específico.
+   * @param {Object} params - Datos para la actualización.
+   * @param {number} params.usuario_id - ID del usuario.
+   * @param {number} params.empleado_id - Nuevo ID del empleado.
+   * @returns {Promise<Object>} Promesa que resuelve a un objeto con el número de filas afectadas.
+   * @throws {Error} Lanza un error de base de datos (ej. registro no encontrado o clave foránea inválida).
+   */
+   updateEmpleadoId: async ({ usuario_id, empleado_id }) => {
+      try {
+         const [result] = await pool.query(
+            `UPDATE usuario_empleado SET empleado_id = ? WHERE usuario_id = ?`,
+            [empleado_id, usuario_id]
+         );
+         return { affectedRows: result.affectedRows };
+      } catch (error) {
+         throw error;
+      }
+   },
 };
 
 export default UsuarioModel;
