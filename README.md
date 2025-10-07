@@ -36,15 +36,30 @@ JERSON-PROYECT
 ├── node_modules/                # Dependencias instaladas automáticamente por npm
 ├── src/                         # Código fuente de la aplicación
 │   ├── config/                  # Configuración (base de datos, variables de entorno, etc.)
+|   │   ├── config.js
+|   │   └── db.js
 │   ├── controllers/             # Lógica de negocio: reciben requests y devuelven respuestas
 │   ├── middlewares/             # Funciones intermedias para validar o procesar requests
 │   ├── models/                  # Modelos de datos (ej: esquemas con Mongoose, Sequelize, etc.)
+│   ├── public/                  # Archivos estáticos (CSS, JS, imágenes, fuentes)
+|   │   ├── css
+|   │   ├── images
+|   │   ├── js
+|   │   ├── libs
+|   │   └── favicon.ico
 │   ├── routes/                  # Definición de rutas y conexión con controladores
 │   ├── views/                   # Plantillas EJS renderizadas en el servidor
-│   ├── public/                  # Archivos estáticos (CSS, JS, imágenes, fuentes)
+|   │   ├── auth
+|   │   ├── empleados
+|   │   └── partials
+|   |       ├── head.ej
+|   |       ├── header.ejs
+|   |       └── scripts.ejs
 │   └── app.js                   # Configuración principal de Express (middlewares, vistas, etc.)
-├── package-lock.json            # Registro exacto de versiones instaladas
+├──.env
+├── .gitignore
 ├── index.js                     # Punto de entrada de la app (levanta el servidor)
+├── package-lock.json            # Registro exacto de versiones instaladas
 ├── package.json                 # Configuración del proyecto: dependencias, scripts, metadata
 └── README.md                    # Documentación del proyecto
 ```
