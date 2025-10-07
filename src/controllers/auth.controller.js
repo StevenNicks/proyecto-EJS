@@ -56,7 +56,7 @@ export const login = async (req, res, next) => {
          id: user.id,
          nombre: user.usuario,
          email: user.email,
-         rol: user.rol,
+         rol: user.rol_id,
       };
 
       // 4. Respuesta JSON con los datos del usuario autenticado

@@ -23,27 +23,20 @@ const UsuarioModel = {
    */
    getUsuarioByEmail: async (email) => {
       try {
-         const [rows] = await pool.query(`SELECT * FROM usuarios WHERE email = ?`, [email]);
-         // const [rows] = await pool.query(
-         //    `SELECT 
-         //       u.id,
-         //       u.nombre AS usuario,
-         //       u.email,
-         //       u.password,
-         //       u.rol_id,
-         //       r.nombre AS rol,
-         //       e.cedula,
-         //       e.primer_nombre,
-         //       e.segundo_nombre,
-         //       e.primer_apellido,
-         //       e.segundo_apellido
-         //       FROM usuarios u
-         //       LEFT JOIN roles r ON u.rol_id = r.id
-         //       LEFT JOIN usuario_empleado ue ON u.id = ue.usuario_id
-         //       LEFT JOIN empleados e ON ue.empleado_id = e.id
-         //       WHERE u.email = ?`,
-         //    [email]
-         // );
+         // const [rows] = await pool.query(`SELECT * FROM usuarios WHERE email = ?`, [email]);
+         const [rows] = await pool.query(
+            `SELECT u.*, 
+               CONCAT(
+                  COALESCE(e.primer_nombre, ''), ' ',
+                  COALESCE(e.segundo_nombre, ''), ' ',
+                  COALESCE(e.primer_apellido, ''), ' ',
+                  COALESCE(e.segundo_apellido, '')
+               ) AS usuario
+               FROM usuarios u
+               LEFT JOIN empleados e ON u.empleado_cedula = e.cedula
+               WHERE email = ?`,
+            [email]
+         );
          return rows.length > 0 ? rows[0] : null;
       } catch (error) {
          throw error;

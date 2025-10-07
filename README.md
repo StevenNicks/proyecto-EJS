@@ -1,4 +1,5 @@
 # Instructivo para Crear un Proyecto en Vanilla JS con Node Modules
+# README DESACTUALIZADO!!! pendiente actualizacion
 
 ## 1. Crear la Carpeta del Proyecto
 

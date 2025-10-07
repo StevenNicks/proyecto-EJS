@@ -18,11 +18,7 @@ export function authMiddleware(req, res, next) {
       // Usuario autenticado, continuar con la siguiente función/middleware o ruta
       next();
    } else {
-      // Usuario no autenticado, responder con error 401
-      // res.status(401).json({ message: "No estás autenticado" });
-      res.status(401).render('error', {
-         statusCode: 401,
-         message: 'No estás autenticado',
-      });
+      // Usuario no autenticado, redireccionar al login
+      res.render("auth/login", { title: "Login" });
    }
 }

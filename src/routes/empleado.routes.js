@@ -1,9 +1,16 @@
 import { Router } from 'express';
-import { renderEmpleados } from '../controllers/empleado.controller.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js'
+import { renderEmpleados, getAllEmpleados } from '../controllers/empleado.controller.js';
 
 const router = Router();
 
-router.get("/", authMiddleware, renderEmpleados);
+/**
+ * Rutas de empleados.
+ *
+ * @description
+ * Define las rutas relacionadas con la gestión de empleados:
+ *  - GET / → Renderiza la vista principal de empleados (por ejemplo, lista de empleados).
+ */
+router.get('/', renderEmpleados);
+router.get('/data', getAllEmpleados);
 
 export default router;
