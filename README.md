@@ -18,66 +18,19 @@ Esto creará un archivo `package.json`.
 
 ## 3. Instalar Dependencias
 
-Puedes instalar dependencias como [lite-server](https://www.npmjs.com/package/lite-server) para desarrollo local:
+Puedes instalar dependencias como :
 
 ```bash
-npm install --save-dev lite-server
+npm i express
+npm i morgan
+npm i mysql2
 ```
+
+Con esto se creará una carpeta ``` node_modules ```
 
 ## 4. Estructura Básica de Archivos
 
 Crea los siguientes archivos:
-
-```
-/mi-proyecto-vanilla-js
-   ├── index.html
-   ├── main.js
-   └── package.json
-```
-
-Ejemplo de `index.html`:
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-   <head>
-      <meta charset="UTF-8" />
-      <title>Proyecto Vanilla JS</title>
-   </head>
-   <body>
-      <h1>Hola Vanilla JS</h1>
-      <script src="main.js"></script>
-   </body>
-</html>
-```
-
-Ejemplo de `main.js`:
-
-```js
-console.log("¡Proyecto Vanilla JS funcionando!");
-```
-
-## 5. Configurar el Script de Inicio
-
-En `package.json`, agrega:
-
-```json
-"scripts": {
-   "start": "lite-server"
-}
-```
-
-## 6. Iniciar el Proyecto
-
-```bash
-npm start
-```
-
-Esto abrirá tu proyecto en el navegador.
-
----
-
-## 7. Estructura del proyecto
 
 ```
 JERSON-PROYECT
@@ -96,5 +49,3 @@ JERSON-PROYECT
 ├── package.json                 # Configuración del proyecto: dependencias, scripts, metadata
 └── README.md                    # Documentación del proyecto
 ```
-
-¡Listo! Ahora tienes un proyecto Vanilla JS con dependencias gestionadas por npm.
