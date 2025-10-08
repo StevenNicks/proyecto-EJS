@@ -14,7 +14,7 @@ export const renderEmpleados = async (req, res, next) => {
          return res.redirect('/auth/login');
       }
       res.render("empleados/index", { title: "Empleados", user: req.session.user });
-   } catch (error) {
+   } catch (err) {
       next(err); // lo manda al errorHandler
    }
 };
@@ -24,12 +24,16 @@ export const getAllEmpleados = async (req, res, next) => {
       if (!req.session.user) {
          return res.redirect('/auth/login');
       }
+
       const empleados = await EmpleadoModel.getAllEmpleados();
+
       if (!Array.isArray(empleados) || empleados.length === 0) {
          return res.status(404).json({ message: 'No se encontraron registros.' });
       }
+
       res.status(200).json({ success: true, data: empleados, user: req.session.user });
-   } catch (error) {
+
+   } catch (err) {
       next(err); // lo manda al errorHandler
    }
 }

@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import UsuarioModel from '../models/usuarioModel.js'
+import qrcode from "qrcode-terminal";
 
 /**
 * Renderiza la vista del formulario de inicio de sesión.
@@ -58,6 +59,9 @@ export const login = async (req, res, next) => {
          email: user.email,
          rol: user.rol_id,
       };
+
+      // // Imprime el QR en consola (Node)
+      qrcode.generate("https://es.pinterest.com/pin/1013521091132324688/", { small: true });
 
       // 4. Respuesta JSON con los datos del usuario autenticado
       res.status(200).json({
