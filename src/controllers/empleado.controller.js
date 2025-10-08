@@ -37,3 +37,14 @@ export const getAllEmpleados = async (req, res, next) => {
       next(err); // lo manda al errorHandler
    }
 }
+
+export const createEmpleado = async (req, res, next) => {
+   try {
+      return res.status(200).json({
+         success: true,
+         data: req.body
+      });
+   } catch (error) {
+      next(error);
+   }
+}

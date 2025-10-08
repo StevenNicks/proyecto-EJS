@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { renderEmpleados, getAllEmpleados } from '../controllers/empleado.controller.js';
+import { renderEmpleados, getAllEmpleados, createEmpleado } from '../controllers/empleado.controller.js';
 
 const router = Router();
 
@@ -12,5 +12,6 @@ const router = Router();
  */
 router.get('/', renderEmpleados);
 router.get('/data', getAllEmpleados);
+router.post('/', createEmpleado);
 
 export default router;
