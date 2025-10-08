@@ -1,13 +1,13 @@
 -- =====================================================
--- 🚀 CREACIÓN DE BASE DE DATOS Y TABLAS DEL SISTEMA TAMIZAJE
+-- 🚀 CREACIÓN DE BASE DE DATOS Y TABLAS DEL SISTEMA sistema_usuarios
 -- =====================================================
 -- Crear la base de datos si no existe
-CREATE DATABASE IF NOT EXISTS tamizaje CHARACTER
+CREATE DATABASE IF NOT EXISTS sistema_usuarios CHARACTER
 SET
    utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 -- Usar la base de datos
-USE tamizaje;
+USE sistema_usuarios;
 
 -- Tabla: roles
 CREATE TABLE IF NOT EXISTS
