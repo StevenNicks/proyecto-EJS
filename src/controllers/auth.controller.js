@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import UsuarioModel from '../models/usuarioModel.js'
+import EmpleadoModel from '../models/empleadoModel.js'
 import qrcode from "qrcode-terminal";
 
 /**
@@ -35,20 +36,28 @@ export const renderLogin = (req, res) => {
 export const login = async (req, res, next) => {
    const { email, password } = req.body;
 
+   // Valida que todos los campos obligatorios estén presentes
+   if (!email || !password) {
+      return res.status(400).json({
+         success: false,
+         message: "Email y contraseña son obligatorios"
+      });
+   }
+
    try {
       // 1. Buscar usuario por email
       const user = await UsuarioModel.getUsuarioByEmail(email);
 
       if (!user) {
          // Si el usuario no existe, responder sin éxito
-         return res.status(200).json({ success: false, message: "Usuario no encontrado" });
+         return res.status(404).json({ success: false, message: "Usuario no encontrado" });
       }
 
       // 2. Comparar contraseña ingresada con la almacenada (hash bcrypt)
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
          // Si la contraseña no coincide, responder sin éxito
-         return res.status(200).json({ success: false, message: "Contraseña incorrecta" });
+         return res.status(401).json({ success: false, message: "Contraseña incorrecta" });
       }
 
       // 3. Guardar usuario en la sesión (solo información mínima)
@@ -105,20 +114,27 @@ export const register = async (req, res, next) => {
 
    // Valida que todos los campos obligatorios estén presentes
    if (!cedula || !email || !password || !confirmPassword) {
-      return res.status(200).json({ success: false, message: "Todos los campos son obligatorios" });
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios" });
    }
 
    // Verifica que las contraseñas coincidan
    if (password !== confirmPassword) {
-      return res.status(400).json({ success: false, message: "Las contraseñas no coinciden" });
+      return res.status(422).json({ success: false, message: "Las contraseñas no coinciden" });
    }
 
    try {
+      // Comprueba si la cedula ya está registrado en la base de datos
+      const empleado = await EmpleadoModel.getEmpleadosByCedula(cedula);
+
+      if (!empleado) {
+         return res.status(404).json({ success: false, message: "Empleado no registrado" });
+      }
+
       // Comprueba si el email ya está registrado en la base de datos
       const user = await UsuarioModel.getUsuarioByEmail(email);
 
       if (user) {
-         return res.status(200).json({ success: false, message: "El email ya está en uso" });
+         return res.status(409).json({ success: false, message: "El email ya está en uso" });
       }
 
       // Hashea la contraseña para almacenarla de forma segura

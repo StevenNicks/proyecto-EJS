@@ -6,6 +6,7 @@ th,
 td {
    text-align: center !important;
    white-space: nowrap;
+   vertical-align: middle !important;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -20,4 +21,9 @@ input.no-arrow[type="number"] {
    -moz-appearance: textfield;
    appearance: textfield;
    /* estándar */
+}
+
+/* dato cedula en las tablas */
+.cedula-clickable {
+   cursor: pointer;
 }

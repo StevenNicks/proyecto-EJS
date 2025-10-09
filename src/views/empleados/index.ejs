@@ -7,125 +7,103 @@
       <body>
          <div class="container-fluid container-md py-4">
             <!-- Fila que organiza las columnas -->
-            <div class="row g-3">
-               <!-- Columna que se adapta a diferentes tamaños de pantalla -->
-
+            <div class="row g-3 mb-3" id="cards">
                <!-- cards -->
-               <div class="col-12 col-sm-12 col-md-4">
-                  <div class="custom-card bg-light p-3 text-center">
-                     <h3>Empleado 1</h3>
-                     <p>Información del empleado, como nombre, cargo, etc.</p>
-                  </div>
-               </div>
-               <div class="col-12 col-sm-12 col-md-4">
-                  <div class="custom-card bg-light p-3 text-center">
-                     <h3>Empleado 2</h3>
-                     <p>Información del empleado, como nombre, cargo, etc.</p>
-                  </div>
-               </div>
-               <div class="col-12 col-sm-12 col-md-4">
-                  <div class="custom-card bg-light p-3 text-center">
-                     <h3>Empleado 3</h3>
-                     <p>Información del empleado, como nombre, cargo, etc.</p>
-                  </div>
-               </div>
-
-               <div class="col-12 col-sm-12 col-md-12">
-                  <div class="custom-card bg-light p-3 text-start">
-                     <!-- Button trigger modal -->
-                     <button type="button" class="btn btn-primary" id="agregar-empleado">
-                        agregar empleado
-                     </button>
-                  </div>
-               </div>
-
-               <div class="col-12">
-                  <div class="custom-card bg-light p-3">
-                     <div class="table-responsive">
-                        <table id="example" class="table table-bordered table-striped-columns table-hover">
-                           <thead>
-                              <tr>
-                                 <th scope="col">#</th>
-                                 <th scope="col">cedula</th>
-                                 <th scope="col">primer_nombre</th>
-                                 <th scope="col">segundo_nombre</th>
-                                 <th scope="col">primer_apellido</th>
-                                 <th scope="col">segundo_apellido</th>
-                                 <th scope="col">Creado</th>
-                                 <th scope="col">Actualizado</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </div>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="createEmpleadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
-               tabindex="-1" aria-labelledby="createEmpleadoModalLabel" aria-hidden="true">
-               <div class="modal-dialog">
-                  <div class="modal-content">
-                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="createEmpleadoModalLabel">Crear un empleado</h1>
-                        <button type="button" class="btn-close" id="createEmpleadoModalBtnClose"></button>
-                     </div>
-                     <div class="modal-body">
-                        <form id="empleadoForm" action="/empleados" method="post" class="row g-3 needs-validation"
-                           novalidate>
-                           <div class="col-md-12">
-                              <label for="cedula" class="form-label">Numero de cedula</label>
-                              <input type="number" class="form-control no-arrow" id="cedula" name="cedula"
-                                 placeholder="Numero de cedula" min="1000000" max="9999999999" required
-                                 value="1143994967">
-                           </div>
-                           <div class="col-md-12">
-                              <label for="primer_nombre" class="form-label">Primer nombre</label>
-                              <input type="text" class="form-control" id="primer_nombre" name="primer_nombre"
-                                 placeholder="Primer nombre" required value="STEVEN">
-                           </div>
-                           <div class="col-md-12">
-                              <label for="segundo_nombre" class="form-label">Segundo nombre</label>
-                              <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre"
-                                 placeholder="Segundo nombre">
-                           </div>
-                           <div class="col-md-12">
-                              <label for="primer_apellido" class="form-label">Primer apellido</label>
-                              <input type="text" class="form-control" id="primer_apellido" name="primer_apellido"
-                                 placeholder="Primer apellido" required value="ALVARADO">
-                           </div>
-                           <div class="col-md-12">
-                              <label for="segundo_apellido" class="form-label">Segundo apellido</label>
-                              <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido"
-                                 placeholder="Segundo apellido">
-                           </div>
-                           <div class="my-3">
-
-                           </div>
-                           <div class="d-grid">
-                              <button class="btn btn-primary" type="submit">Agregar funcionario</button>
-                           </div>
-                        </form>
+            <!-- Boton agregar empleado -->
+            <% if (user && (user.rol===1 || user.rol===3)) { %>
+               <div class="row g-3 mb-3">
+                  <div class="col-12 col-sm-12 col-md-12">
+                     <div class="custom-card bg-light p-3 text-start border border-2 rounded">
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
+                           id="agregar-empleado">
+                           <i data-lucide="user-round-plus" width="20" height="20"></i>
+                           Agregar empleado
+                        </button>
                      </div>
                   </div>
                </div>
-            </div>
+               <% } %>
+
+                  <!-- tabla de empleados -->
+                  <div class="row g-3 mb-3">
+                     <div class="col-12">
+                        <div class="custom-card bg-light p-3 border border-2 rounded">
+                           <div class="table-responsive">
+                              <table id="example" class="table table-bordered table-striped-columns table-hover">
+                                 <thead>
+                                    <tr>
+                                       <th scope="col">#</th>
+                                       <th scope="col">cedula</th>
+                                       <th scope="col">primer_nombre</th>
+                                       <th scope="col">segundo_nombre</th>
+                                       <th scope="col">primer_apellido</th>
+                                       <th scope="col">segundo_apellido</th>
+                                       <th scope="col">Creado</th>
+                                       <th scope="col">Actualizado</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="createEmpleadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="createEmpleadoModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="createEmpleadoModalLabel">Crear un empleado</h1>
+                              <button type="button" class="btn-close" id="createEmpleadoModalBtnClose"></button>
+                           </div>
+                           <div class="modal-body">
+                              <form id="empleadoForm" action="/empleados" method="post" class="row g-3 needs-validation"
+                                 novalidate>
+                                 <div class="col-md-12">
+                                    <label for="cedula" class="form-label">Numero de cedula</label>
+                                    <input type="number" class="form-control no-arrow" id="cedula" name="cedula"
+                                       placeholder="Numero de cedula" min="1000000" max="9999999999" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="primer_nombre" class="form-label">Primer nombre</label>
+                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre"
+                                       placeholder="Primer nombre" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="segundo_nombre" class="form-label">Segundo nombre</label>
+                                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre"
+                                       placeholder="Segundo nombre">
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="primer_apellido" class="form-label">Primer apellido</label>
+                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido"
+                                       placeholder="Primer apellido" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="segundo_apellido" class="form-label">Segundo apellido</label>
+                                    <input type="text" class="form-control" id="segundo_apellido"
+                                       name="segundo_apellido" placeholder="Segundo apellido">
+                                 </div>
+                                 <div class="my-3">
+
+                                 </div>
+                                 <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit">Agregar funcionario</button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
 
          </div>
          <%- include('../partials/scripts') %>
-            <script>
-               $("#agregar-empleado").on("click", function () {
-                  $("#createEmpleadoModal").modal('show');
-               });
-
-               $("#createEmpleadoModalBtnClose").on("click", function () {
-                  this.blur(); // Quita el foco del botón
-                  $("#createEmpleadoModal").modal('hide');
-               });
-            </script>
             <script src="/js/empleados.js"></script>
       </body>
 

@@ -1,4 +1,5 @@
 import EmpleadoModel from '../models/empleadoModel.js'
+import RolModel from '../models/rolModel.js'
 
 /**
  * Renderiza la vista principal de empleados.
@@ -39,12 +40,53 @@ export const getAllEmpleados = async (req, res, next) => {
 }
 
 export const createEmpleado = async (req, res, next) => {
+   let { cedula, primer_nombre, primer_apellido, segundo_nombre, segundo_apellido } = req.body;
+
+   // Valida que  los campos obligatorios estén presentes
+   if (!cedula || !primer_nombre || !primer_apellido) {
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios" });
+   }
+
+   // Normalizar campos opcionales vacíos -> null
+   segundo_nombre = segundo_nombre?.trim() || null;
+   segundo_apellido = segundo_apellido?.trim() || null;
+
    try {
-      return res.status(200).json({
+      // Comprueba si la cedula ya está registrado en la base de datos
+      const empleado = await EmpleadoModel.getEmpleadosByCedula(cedula);
+
+      if (empleado) {
+         return res.status(409).json({ success: false, message: "La cedula ya está en registrada" });
+      }
+
+      // Registra el empleado en la base de datos
+      const { userId } = await EmpleadoModel.createEmpleado({
+         cedula: cedula.trim(),
+         primer_nombre: primer_nombre.trim().toUpperCase(),
+         primer_apellido: primer_apellido.trim().toUpperCase(),
+         segundo_nombre: segundo_nombre ? segundo_nombre.trim().toUpperCase() : null,
+         segundo_apellido: segundo_apellido ? segundo_apellido.trim().toUpperCase() : null
+      });
+
+      return res.status(201).json({
          success: true,
-         data: req.body
+         message: 'Empleado registrado exitosamente',
+         userId
       });
    } catch (error) {
       next(error);
+   }
+}
+
+export const countUsuariosByRol = async (req, res, next) => {
+   try {
+      const data = await RolModel.getCountByRol();
+
+      return res.status(201).json({
+         success: true,
+         data
+      });
+   } catch (error) {
+      next(error)
    }
 }

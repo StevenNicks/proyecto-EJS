@@ -10,8 +10,8 @@ SET
 USE tamizaje;
 
 -- Tabla: roles
-CREATE TABLE IF NOT EXISTS
-   roles (
+CREATE TABLE
+   IF NOT EXISTS roles (
       id INT AUTO_INCREMENT PRIMARY KEY,
       nombre VARCHAR(50) NOT NULL UNIQUE,
       descripcion VARCHAR(255) NULL,
@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS
    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Tabla: empleados
-CREATE TABLE IF NOT EXISTS
-   empleados (
+CREATE TABLE
+   IF NOT EXISTS empleados (
       id INT AUTO_INCREMENT PRIMARY KEY,
       cedula VARCHAR(20) NOT NULL UNIQUE,
       primer_nombre VARCHAR(50) NOT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS
    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Tabla: usuarios
-CREATE TABLE IF NOT EXISTS
-   usuarios (
+CREATE TABLE
+   IF NOT EXISTS usuarios (
       id INT AUTO_INCREMENT PRIMARY KEY,
       -- nombre VARCHAR(100) NOT NULL,
       empleado_cedula VARCHAR(20) NOT NULL,

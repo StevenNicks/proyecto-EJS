@@ -89,13 +89,21 @@
                   }).done(function (response) {
                      if (response.success) {
                         window.location.href = "/empleados";
-                     } else {
-                        console.log("❌", response.message);
-                        Toast.fire({
-                           icon: "error",
-                           title: response.message
-                        });
                      }
+                  }).fail(function (xhr, status, error) {
+                     console.warn("⚠️ Error HTTP:", xhr.status, error);
+                     let msg = "Ocurrió un error inesperado.";
+
+                     if (xhr.status === 400) msg = "Email y contraseña son obligatorios.";
+                     else if (xhr.status === 401) msg = "Credenciales incorrectas.";
+                     else if (xhr.status === 403) msg = "Acceso denegado.";
+                     else if (xhr.status === 404) msg = "Usuario no encontrado.";
+                     else if (xhr.status === 500) msg = "Error interno del servidor.";
+
+                     Toast.fire({
+                        icon: "error",
+                        title: msg
+                     });
                   }).always(function () {
                      // Volver a activar el botón después de terminar
                      $submitBtn.prop('disabled', false).text('Iniciar sesión');
