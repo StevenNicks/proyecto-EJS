@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { renderEmpleados, getAllEmpleados, createEmpleado, countUsuariosByRol } from '../controllers/empleado.controller.js';
+import { renderEmpleados, getAllEmpleados, createEmpleado, countUsuariosByRol, deleteEmpleadoById } from '../controllers/empleado.controller.js';
 
 const router = Router();
 
@@ -13,7 +13,7 @@ const router = Router();
 router.get('/', renderEmpleados);
 router.get('/data', getAllEmpleados);
 router.post('/', createEmpleado);
-
+router.delete('/:id', deleteEmpleadoById);
 router.get('/countUserByRol', countUsuariosByRol)
 
 export default router;

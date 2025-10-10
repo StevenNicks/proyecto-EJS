@@ -58,6 +58,25 @@ const EmpleadoModel = {
          throw error;
       }
    },
+
+   deleteEmpleadoById: async (id) => {
+      try {
+         const [result] = await pool.query(
+            `DELETE FROM empleados WHERE id = ?`,
+            [id]
+         );
+
+         // result.affectedRows indica cuántas filas se eliminaron
+         return {
+            success: result.affectedRows > 0,
+            message: result.affectedRows > 0
+               ? 'Empleado eliminado correctamente'
+               : 'No se encontró el empleado con ese ID'
+         };
+      } catch (error) {
+         throw error;
+      }
+   }
 };
 
 export default EmpleadoModel;

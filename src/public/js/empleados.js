@@ -1,6 +1,54 @@
+// Cargar tarjetas dinámicas (Roles)
+function cargarCards() {
+   $.ajax({
+      method: "GET",
+      url: "/empleados/countUserByRol",
+      dataType: "json",
+   }).done(function (response) {
+      // console.log(response);
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
+         // 👇 Extraemos el primer objeto del array
+         const { total_empleados, total_admins, total_supervisores } = response.data[0];
+
+         const container = $("#cards");
+         container.empty(); // 🔄 Limpia antes de insertar nuevas tarjetas
+
+         const roles = [
+            { nombre: "Empleado", total: total_empleados, icono: "users-round" },
+            { nombre: "Supervisor", total: total_supervisores, icono: "user-round-pen" },
+            { nombre: "Admin", total: total_admins, icono: "shield-user" }
+         ];
+
+         roles.forEach(({ nombre, total, icono }) => {
+            const card = `
+                  <div class="col-12 col-sm-12 col-md-4 mb-3">
+                     <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
+                        <h3 class="fw-semibold mb-2 d-flex align-items-center justify-content-center gap-2">
+                           <i data-lucide="${icono}" width="25" height="25" stroke-width="2.5"></i>
+                           <span>${nombre}s</span>
+                        </h3>
+                        <p class="mt-2 mb-0">${total} ${nombre}s</p>
+                     </div>
+                  </div>
+               `;
+            container.append(card);
+         });
+
+         if (window.lucide) lucide.createIcons();
+      } else {
+         console.warn("⚠️ No se encontraron datos válidos en la respuesta.");
+      }
+   }).fail(function (xhr, status, error) {
+      console.warn("⚠️ Error HTTP:", xhr.status, error);
+   })
+};
+
 $(document).ready(function () {
    // rol de la sesion
    let userRole = null;
+
+   // Carga datos de las cards
+   cargarCards();
 
    // Mostrar modal para crear empleado
    $("#agregar-empleado").on("click", function () {
@@ -58,16 +106,14 @@ $(document).ready(function () {
       columns: [
          {
             data: 'id',
-            defaultContent: 'N/A',
             createdCell: function (td, cellData, rowData, row, col) {
                $(td).addClass('bg-success text-white');
             }
          },
          {
             data: 'cedula',
-            defaultContent: 'N/A', // Si el valor de 'cedula' es null o undefined, muestra 'N/A'.
             createdCell: function (td, cellData, rowData, row, col) {
-               const cedula = cellData ? cellData.toString() : "";
+               const cedula = cellData ? cellData.toString() : "VACIO";
 
                // valida que la cedula no posea menos de 7 caracteres
                const isValida = cedula.length >= 7;
@@ -89,7 +135,7 @@ $(document).ready(function () {
                } else {
                   // Mostrar tooltip de cédula errónea sin permitir copiar
                   $(td)
-                     .addClass('text-center align-middle bg-warning-flash')
+                     .addClass('text-center align-middle bg-warning')
                      .attr({
                         'data-bs-toggle': 'tooltip',
                         'data-bs-placement': 'right',
@@ -100,12 +146,73 @@ $(document).ready(function () {
                }
             }
          },
-         { data: 'primer_nombre', defaultContent: 'N/A' },
-         { data: 'segundo_nombre', defaultContent: 'N/A' },
-         { data: 'primer_apellido', defaultContent: 'N/A' },
-         { data: 'segundo_apellido', defaultContent: 'N/A' },
-         { data: 'created_at', defaultContent: 'N/A' },
-         { data: 'updated_at', defaultContent: 'N/A' },
+         {
+            data: 'primer_nombre',
+            createdCell: function (td, cellData, rowData, row, col) {
+               let capitalized = cellData.toUpperCase();
+               $(td).text(capitalized);
+            }
+         },
+         {
+            data: 'segundo_nombre',
+            createdCell: function (td, cellData, rowData, row, col) {
+               let value = (cellData || '').trim(); // Maneja null y undefined
+               let data = value ? value.toUpperCase() : 'N/A';
+               $(td).text(data);
+            }
+         },
+         {
+            data: 'primer_apellido',
+            createdCell: function (td, cellData, rowData, row, col) {
+               let capitalized = cellData.toUpperCase();
+               $(td).text(capitalized);
+            }
+         },
+         {
+            data: 'segundo_apellido',
+            createdCell: function (td, cellData, rowData, row, col) {
+               let value = (cellData || '').trim(); // Maneja null y undefined
+               let data = value ? value.toUpperCase() : 'N/A';
+               $(td).text(data);
+            }
+         },
+         {
+            title: 'Actualizar',
+            data: 'id',
+            render: function (data, type, row, meta) {
+               if (type === 'display') {
+                  return `
+                     <button type="button" class="btn btn-primary btn-update w-100" data-id="${data}">
+                        <i data-lucide="user-round-pen" width="20" height="20" stroke-width="2"></i>
+                     </button>
+                  `;
+               }
+               return data;   // ordenación y búsqueda
+            }
+         },
+         {
+            title: 'Eliminar',
+            data: 'id',
+            render: function (data, type, row, meta) {
+               if (type === 'display') {
+                  return `
+                     <button type="button" class="btn btn-danger btn-delete w-100" data-id="${data}">
+                        <i data-lucide="user-round-x" width="20" height="20" stroke-width="2"></i>
+                     </button>
+                  `;
+               }
+               return data;   // ordenación y búsqueda
+            }
+         },
+         {
+            title: 'Creado',
+            data: 'created_at',
+         },
+         {
+            title: 'Actualizado',
+            data: 'updated_at',
+         },
+
       ],
       drawCallback: function (settings) {
          const tooltipTriggerList = [].slice.call(document.querySelectorAll(
@@ -119,8 +226,15 @@ $(document).ready(function () {
             // Oculta las columnas 6 y 7 (índices empiezan en 0)
             tableEmpleados.column(6).visible(false);
             tableEmpleados.column(7).visible(false);
+            tableEmpleados.column(8).visible(false);
+            tableEmpleados.column(9).visible(false);
          }
       }
+   });
+
+   // Redibujar íconos al cambiar de página en la tabla
+   tableEmpleados.on('draw', function () {
+      lucide.createIcons(); // vuelve a renderizar los íconos Lucide
    });
 
    // Copiar cédula al portapapeles
@@ -143,9 +257,13 @@ $(document).ready(function () {
       if (userRole !== 1 && userRole !== 3) {
          tableEmpleados.column(6).visible(false);
          tableEmpleados.column(7).visible(false);
+         tableEmpleados.column(8).visible(false);
+         tableEmpleados.column(9).visible(false);
       } else {
          tableEmpleados.column(6).visible(true);
          tableEmpleados.column(7).visible(true);
+         tableEmpleados.column(8).visible(true);
+         tableEmpleados.column(9).visible(true);
       }
    });
 
@@ -167,13 +285,19 @@ $(document).ready(function () {
                $submitBtn.prop('disabled', true).text('Procesando...');
             }
          }).done(function (response) {
-            console.log(response);
+            // console.log(response);
             if (response.success) {
                $("#createEmpleadoModal").modal('hide');  // Cierra el modal
                $("#empleadoForm")[0].reset();            // Limpia el formulario
 
+               $("#empleadoForm")
+                  .removeClass("was-validated") // Quita la clase general de Bootstrap
+                  .find(".is-valid, .is-invalid") // Busca campos con estilos de validación
+                  .removeClass("is-valid is-invalid"); // Los limpia
                // 🔄 Recargar la tabla
                tableEmpleados.ajax.reload(null, false); // false = mantiene la página actual
+
+               cargarCards();
 
                // Muestra el mensaje
                Toast.fire({
@@ -214,50 +338,52 @@ $(document).ready(function () {
       }
    });
 
-   // Cargar tarjetas dinámicas (Roles)
-   $(document).ready(function () {
-      $.ajax({
-         method: "GET",
-         url: "/empleados/countUserByRol",
-         dataType: "json",
-      }).done(function (response) {
-         // console.log(response);
-         if (response.success && Array.isArray(response.data)) {
-            const container = $("#cards");
-            container.empty(); // 🔄 Limpia antes de insertar nuevas tarjetas
+   // Eventos
+   $(document).on('click', '.btn-delete', function () {
+      const id = $(this).data('id');
+      const $submitBtn = $(this);
 
-            response.data.forEach(item => {
-               // Capitalizar el nombre
-               const nombre = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1);
+      // Confirmación opcional (antes de eliminar)
+      Swal.fire({
+         title: "¿Estás seguro?",
+         text: "Esta acción eliminará el registro permanentemente.",
+         icon: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Sí, eliminar",
+         cancelButtonText: "Cancelar"
+      }).then((result) => {
+         if (!result.isConfirmed) return; // cancelado
 
-               // 🧩 Asigna ícono según el rol
-               let icono = "user-round";
-               if (item.nombre.toLowerCase() === "admin") icono = "shield-user";
-               else if (item.nombre.toLowerCase() === "empleado") icono = "users-round";
-               else if (item.nombre.toLowerCase() === "supervisor") icono = "user-round-pen";
+         // 🔄 Spinner antes de enviar
+         $submitBtn.prop('disabled', true).html(`
+         <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Cargando...</span>
+         </div>
+      `);
 
-               // Crear la tarjeta dinámica HTML
-               const card = `
-                  <div class="col-12 col-sm-12 col-md-4 mb-3">
-                     <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
-                        <h3 class="fw-semibold mb-2 d-flex align-items-center justify-content-center gap-2">
-                           <i data-lucide="${icono}" width="25" height="25" stroke-width="2.5"></i>
-                           <span>${nombre}s</span>
-                        </h3>
-                        <p class="mt-2 mb-0">${item.total} ${nombre}s</p>
-                     </div>
-                  </div>
-               `;
-
-               // Insertar en el contenedor
-               container.append(card);
+         $.ajax({
+            method: "DELETE",
+            url: `/empleados/${id}`,
+         }).done(function (response) {
+            Toast.fire({
+               icon: "success",
+               title: response.message || "Registro eliminado exitosamente"
             });
-            if (window.lucide) lucide.createIcons();
-         } else {
-            console.warn("⚠️ No se encontraron datos válidos en la respuesta.");
-         }
-      }).fail(function (xhr, status, error) {
-         console.warn("⚠️ Error HTTP:", xhr.status, error);
-      })
+
+            tableEmpleados.ajax.reload(null, false); // recarga sin perder la página actual
+         }).fail(function (xhr, status, error) {
+            console.error('Error al eliminar:', error);
+            Toast.fire({
+               icon: "error",
+               title: "Ocurrió un error al eliminar el registro"
+            });
+
+            // restaurar botón solo si NO se eliminó
+            $submitBtn.prop('disabled', false).html(`
+               <i data-lucide="user-round-x" width="20" height="20" stroke-width="2"></i>
+            `);
+            lucide.createIcons();
+         });
+      });
    });
 });

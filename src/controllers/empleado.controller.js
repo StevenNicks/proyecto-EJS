@@ -90,3 +90,15 @@ export const countUsuariosByRol = async (req, res, next) => {
       next(error)
    }
 }
+
+export const deleteEmpleadoById = async (req, res, next) => {
+   try {
+      const { id } = req.params; // o req.params.id si lo mandás en la URL
+
+      const response = await EmpleadoModel.deleteEmpleadoById(id);
+
+      return res.status(200).json(response);
+   } catch (error) {
+      next(error);
+   }
+};
