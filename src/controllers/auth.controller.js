@@ -124,7 +124,7 @@ export const register = async (req, res, next) => {
 
    try {
       // Comprueba si la cedula ya está registrado en la base de datos
-      const empleado = await EmpleadoModel.getEmpleadosByCedula(cedula);
+      const empleado = await EmpleadoModel.getEmpleadoByCedula(cedula);
 
       if (!empleado) {
          return res.status(404).json({ success: false, message: "Empleado no registrado" });
@@ -152,3 +152,44 @@ export const register = async (req, res, next) => {
       next(error);
    }
 }
+
+/**
+ * Cierra la sesión del usuario actual.
+ * @route POST /auth/logout
+ * 
+ * @param {Object} req - Objeto de solicitud HTTP (Express), contiene la sesión activa.
+ * @param {Object} res - Objeto de respuesta HTTP (Express).
+ * @param {Function} next - Middleware para manejar errores.
+ * 
+ * @description
+ * Este controlador:
+ *  1. Verifica si existe una sesión activa.
+ *  2. Destruye la sesión en el servidor.
+ *  3. Elimina la cookie de sesión del cliente.
+ *  4. Devuelve una respuesta JSON confirmando el cierre de sesión.
+ */
+export const logout = (req, res, next) => {
+   // 1️⃣ Verificar si hay sesión activa
+   if (!req.session.loggedin) {
+      return res.status(400).json({
+         success: false,
+         message: "No hay sesión activa para cerrar."
+      });
+   }
+
+   // 2️⃣ Destruir sesión
+   req.session.destroy((err) => {
+      if (err) {
+         return next(err); // pasa el error al middleware
+      }
+
+      // 3️⃣ Limpiar cookie de sesión
+      res.clearCookie('connect.sid'); // nombre por defecto usado por express-session
+
+      // 4️⃣ Responder al cliente
+      res.status(200).json({
+         success: true,
+         message: "Sesión cerrada correctamente."
+      });
+   });
+};

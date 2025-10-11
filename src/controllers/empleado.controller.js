@@ -1,9 +1,9 @@
 import EmpleadoModel from '../models/empleadoModel.js'
-import RolModel from '../models/rolModel.js'
 
 /**
  * Renderiza la vista principal de empleados.
- * @route GET /
+ * @route GET /empleados
+ * 
  * @param {Object} req - Objeto de solicitud de Express.
  * @param {Object} res - Objeto de respuesta de Express.
  * @param {Function} next - Función para pasar al siguiente middleware.
@@ -11,21 +11,26 @@ import RolModel from '../models/rolModel.js'
  */
 export const renderEmpleados = async (req, res, next) => {
    try {
-      if (!req.session.user) {
-         return res.redirect('/auth/login');
-      }
-      res.render("empleados/index", { title: "Empleados", user: req.session.user });
-   } catch (err) {
-      next(err); // lo manda al errorHandler
+      res.render("empleados/index", {
+         title: "Empleados",
+         user: req.session.user
+      });
+   } catch (error) {
+      next(error);
    }
-};
+}
 
+/**
+ * Obtiene todos los registros de empleados desde la base de datos.
+ * @route GET /empleados/data
+ * 
+ * @param {Object} req - Objeto de solicitud de Express.
+ * @param {Object} res - Objeto de respuesta de Express.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {void} Devuelve una respuesta JSON con la lista de empleados o un mensaje de error.
+ */
 export const getAllEmpleados = async (req, res, next) => {
    try {
-      if (!req.session.user) {
-         return res.redirect('/auth/login');
-      }
-
       const empleados = await EmpleadoModel.getAllEmpleados();
 
       if (!Array.isArray(empleados) || empleados.length === 0) {
@@ -33,71 +38,162 @@ export const getAllEmpleados = async (req, res, next) => {
       }
 
       res.status(200).json({ success: true, data: empleados, user: req.session.user });
-
-   } catch (err) {
-      next(err); // lo manda al errorHandler
-   }
-}
-
-export const createEmpleado = async (req, res, next) => {
-   let { cedula, primer_nombre, primer_apellido, segundo_nombre, segundo_apellido } = req.body;
-
-   // Valida que  los campos obligatorios estén presentes
-   if (!cedula || !primer_nombre || !primer_apellido) {
-      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios" });
-   }
-
-   // Normalizar campos opcionales vacíos -> null
-   segundo_nombre = segundo_nombre?.trim() || null;
-   segundo_apellido = segundo_apellido?.trim() || null;
-
-   try {
-      // Comprueba si la cedula ya está registrado en la base de datos
-      const empleado = await EmpleadoModel.getEmpleadosByCedula(cedula);
-
-      if (empleado) {
-         return res.status(409).json({ success: false, message: "La cedula ya está en registrada" });
-      }
-
-      // Registra el empleado en la base de datos
-      const { userId } = await EmpleadoModel.createEmpleado({
-         cedula: cedula.trim(),
-         primer_nombre: primer_nombre.trim().toUpperCase(),
-         primer_apellido: primer_apellido.trim().toUpperCase(),
-         segundo_nombre: segundo_nombre ? segundo_nombre.trim().toUpperCase() : null,
-         segundo_apellido: segundo_apellido ? segundo_apellido.trim().toUpperCase() : null
-      });
-
-      return res.status(201).json({
-         success: true,
-         message: 'Empleado registrado exitosamente',
-         userId
-      });
    } catch (error) {
       next(error);
    }
 }
 
-export const countUsuariosByRol = async (req, res, next) => {
-   try {
-      const data = await RolModel.getCountByRol();
+/**
+ * Obtiene un empleado según su número de cédula.
+ * @route GET /empleados/:cedula
+ * 
+ * @param {Object} req - Objeto de solicitud de Express.
+ * @param {Object} res - Objeto de respuesta de Express.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {void} Devuelve una respuesta JSON con los datos del empleado.
+ */
+export const getAllEmpleadoByCedula = async (req, res, next) => {
+   const { cedula } = req.params; // Extrae la cédula desde los parámetros de la ruta
 
-      return res.status(201).json({
-         success: true,
-         data
-      });
+   try {
+      // Consulta los datos del empleado en el modelo
+      const row = await EmpleadoModel.getEmpleadoByCedula(cedula);
+
+      // Devuelve la respuesta exitosa con los datos del empleado
+      res.status(200).json({ success: true, data: row });
    } catch (error) {
-      next(error)
+      next(error);
    }
 }
 
-export const deleteEmpleadoById = async (req, res, next) => {
+/**
+ * Crea un nuevo empleado en la base de datos.
+ * @route POST /empleados
+ * 
+ * @param {Object} req - Objeto de solicitud de Express.
+ * @param {Object} res - Objeto de respuesta de Express.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {void} Devuelve una respuesta JSON con el id del nuevo empleado o un mensaje de error.
+ */
+export const createEmpleado = async (req, res, next) => {
+   let { cedula, primer_nombre, primer_apellido, segundo_nombre, segundo_apellido } = req.body;
+
+   // Valida campos obligatorios
+   if (!cedula || !primer_nombre || !primer_apellido) {
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios" });
+   }
+
+   // Si el dato existe quita los espacios sino dato = NULL
+   segundo_nombre = segundo_nombre?.trim() || null;
+   segundo_apellido = segundo_apellido?.trim() || null;
+
    try {
-      const { id } = req.params; // o req.params.id si lo mandás en la URL
+      // Verifica si la cédula ya existe en la base de datos
+      const empleado = await EmpleadoModel.getEmpleadoByCedula(cedula);
 
-      const response = await EmpleadoModel.deleteEmpleadoById(id);
+      if (empleado) {
+         return res.status(409).json({ success: false, message: "La cedula ya está en registrada" });
+      }
 
-      return res.status(200).json(response);
+      // Inserta el nuevo empleado
+      const { userId } = await EmpleadoModel.createEmpleado({
+         cedula: cedula.trim(),
+         primer_nombre: primer_nombre.trim().toUpperCase(),
+         segundo_nombre: segundo_nombre ? segundo_nombre.trim().toUpperCase() : null,
+         primer_apellido: primer_apellido.trim().toUpperCase(),
+         segundo_apellido: segundo_apellido ? segundo_apellido.trim().toUpperCase() : null
+      });
+
+      return res.status(201).json({ success: true, message: 'Empleado registrado exitosamente', userId });
+   } catch (error) {
+      next(error);
+   }
+}
+
+/**
+ * Actualiza los datos de un empleado existente según su cédula.
+ * @route PUT /empleados/:cedula
+ * 
+ * @param {Object} req - Objeto de solicitud de Express.
+ * @param {Object} res - Objeto de respuesta de Express.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {void} Devuelve una respuesta JSON con el resultado de la actualización.
+ */
+export const updateEmpleadoByCedula = async (req, res, next) => {
+   const { cedula } = req.params; // Cédula enviada por la URL
+   let { primer_nombre, segundo_nombre, primer_apellido, segundo_apellido } = req.body; // Datos enviados en el cuerpo
+
+   try {
+      // 🔹 Validaciones mínimas
+      if (!cedula || !primer_nombre || !primer_apellido) {
+         return res.status(400).json({
+            success: false,
+            message: "La cédula, primer nombre y primer apellido son obligatorios."
+         });
+      }
+
+      // Si el dato existe quita los espacios sino dato = NULL
+      segundo_nombre = segundo_nombre?.trim() || null;
+      segundo_apellido = segundo_apellido?.trim() || null;
+
+      // 🔹 Llamada al modelo para actualizar el empleado
+      const result = await EmpleadoModel.updateEmpleadoByCedula({
+         cedula: cedula.trim(),
+         primer_nombre: primer_nombre.trim().toUpperCase(),
+         segundo_nombre: segundo_nombre ? segundo_nombre.trim().toUpperCase() : null,
+         primer_apellido: primer_apellido.trim().toUpperCase(),
+         segundo_apellido: segundo_apellido ? segundo_apellido.trim().toUpperCase() : null
+      });
+
+      // 🔹 Verifica si se actualizó algún registro
+      if (result.affectedRows === 0) {
+         return res.status(404).json({
+            success: false,
+            message: "No se encontró ningún empleado con esa cédula."
+         });
+      }
+
+      // 🔹 Respuesta exitosa
+      return res.status(200).json({
+         success: true,
+         message: "Empleado actualizado correctamente."
+      });
+
+   } catch (error) {
+      // Envía el error al manejador global
+      next(error);
+   }
+}
+
+/**
+ * Elimina un empleado existente según su cédula.
+ * @route DELETE /empleados/:cedula
+ * 
+ * @param {Object} req - Objeto de solicitud de Express.
+ * @param {Object} res - Objeto de respuesta de Express.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {void} Devuelve una respuesta JSON con el resultado de la eliminación.
+ */
+export const deleteEmpleadoByCedula = async (req, res, next) => {
+   const { cedula } = req.params;
+
+   try {
+      const result = await EmpleadoModel.deleteEmpleadoByCedula(cedula);
+
+      // 🔹 Si no se encontró el empleado
+      if (!result.success) {
+         return res.status(404).json({
+            success: false,
+            message: result.message
+         });
+      }
+
+      // 🔹 Eliminación exitosa
+      return res.status(200).json({
+         success: true,
+         message: result.message
+      });
+
    } catch (error) {
       next(error);
    }

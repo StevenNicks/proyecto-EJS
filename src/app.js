@@ -19,8 +19,11 @@ app.use(express.static(path.join(__dirname, "public"))); // app.use(express.stat
 
 // Importar las rutas principales
 import authRoutes from './routes/auth.routes.js';
-import errorRoutes from './routes/error.route.js';
 import empleadoRoutes from './routes/empleado.routes.js';
+import usuarioRoutes from './routes/usuario.routes.js';
+// import rolRoutes from './routes/rol.routes.js';
+
+import errorRoutes from './routes/error.route.js';
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -33,13 +36,14 @@ app.use(
    })
 );
 
-// redirects de ruta raiz a login
-app.get('/', (req, res) => res.redirect('/auth/login'));
-app.get('/auth', (req, res) => res.redirect('/auth/login'));
+// Redirect al login
+app.get(['/', '/auth'], (req, res) => res.redirect('/auth/login'));
 
-// Usar las rutas
+// Rutas
 app.use('/auth', authRoutes);
 app.use('/empleados', empleadoRoutes);
+app.use('/usuarios', usuarioRoutes);
+// app.use('/roles', rolRoutes);
 
 app.use('/error', errorRoutes);
 

@@ -2,10 +2,9 @@
 function cargarCards() {
    $.ajax({
       method: "GET",
-      url: "/empleados/countUserByRol",
+      url: "/usuarios/count-by-rol", // ✅ Nueva ruta correcta
       dataType: "json",
    }).done(function (response) {
-      // console.log(response);
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
          // 👇 Extraemos el primer objeto del array
          const { total_empleados, total_admins, total_supervisores } = response.data[0];
@@ -21,27 +20,28 @@ function cargarCards() {
 
          roles.forEach(({ nombre, total, icono }) => {
             const card = `
-                  <div class="col-12 col-sm-12 col-md-4 mb-3">
-                     <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
-                        <h3 class="fw-semibold mb-2 d-flex align-items-center justify-content-center gap-2">
-                           <i data-lucide="${icono}" width="25" height="25" stroke-width="2.5"></i>
-                           <span>${nombre}s</span>
-                        </h3>
-                        <p class="mt-2 mb-0">${total} ${nombre}s</p>
-                     </div>
+               <div class="col-12 col-sm-12 col-md-4 mb-3">
+                  <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
+                     <h3 class="fw-semibold mb-2 d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="${icono}" width="25" height="25" stroke-width="2.5"></i>
+                        <span>${nombre}s</span>
+                     </h3>
+                     <p class="mt-2 mb-0">${total} ${nombre}s</p>
                   </div>
-               `;
+               </div>
+            `;
             container.append(card);
          });
 
-         if (window.lucide) lucide.createIcons();
+         if (window.lucide) lucide.createIcons(); // ✅ Regenera íconos
       } else {
          console.warn("⚠️ No se encontraron datos válidos en la respuesta.");
       }
    }).fail(function (xhr, status, error) {
       console.warn("⚠️ Error HTTP:", xhr.status, error);
-   })
-};
+   });
+}
+
 
 $(document).ready(function () {
    // rol de la sesion
@@ -55,17 +55,25 @@ $(document).ready(function () {
       $("#createEmpleadoModal").modal('show');
    });
 
-   // Cerrar modal y limpiar formulario
-   $("#createEmpleadoModalBtnClose").on("click", function () {
+   // Cerrar cualquier modal activa con el botón "X" y limpiar su formulario
+   $(document).on("click", ".btn-close", function () {
       this.blur(); // Quita el foco del botón
-      $("#createEmpleadoModal").modal("hide"); // Cierra el modal
-      $("#empleadoForm")[0].reset(); // Limpia los valores del formulario
 
-      // 🔹 Elimina clases de validación de Bootstrap
-      $("#empleadoForm")
-         .removeClass("was-validated") // Quita la clase general de Bootstrap
-         .find(".is-valid, .is-invalid") // Busca campos con estilos de validación
-         .removeClass("is-valid is-invalid"); // Los limpia
+      // Obtiene el modal donde está el botón de cierre
+      const $modal = $(this).closest(".modal");
+
+      // Cierra el modal manualmente (por seguridad)
+      $modal.modal("hide");
+
+      // Busca y limpia el formulario dentro del modal (si existe)
+      const $form = $modal.find("form");
+      if ($form.length) {
+         $form[0].reset(); // Limpia los valores del formulario
+         $form
+            .removeClass("was-validated") // Quita la clase general de validación
+            .find(".is-valid, .is-invalid") // Limpia los estados de validación
+            .removeClass("is-valid is-invalid");
+      }
    });
 
    // Inicialización de DataTable (Empleados)
@@ -178,11 +186,11 @@ $(document).ready(function () {
          },
          {
             title: 'Actualizar',
-            data: 'id',
+            data: 'cedula',
             render: function (data, type, row, meta) {
                if (type === 'display') {
                   return `
-                     <button type="button" class="btn btn-primary btn-update w-100" data-id="${data}">
+                     <button type="button" class="btn btn-primary btn-update w-100" data-cedula="${data}">
                         <i data-lucide="user-round-pen" width="20" height="20" stroke-width="2"></i>
                      </button>
                   `;
@@ -192,11 +200,11 @@ $(document).ready(function () {
          },
          {
             title: 'Eliminar',
-            data: 'id',
+            data: 'cedula',
             render: function (data, type, row, meta) {
                if (type === 'display') {
                   return `
-                     <button type="button" class="btn btn-danger btn-delete w-100" data-id="${data}">
+                     <button type="button" class="btn btn-danger btn-delete w-100" data-cedula="${data}">
                         <i data-lucide="user-round-x" width="20" height="20" stroke-width="2"></i>
                      </button>
                   `;
@@ -338,9 +346,146 @@ $(document).ready(function () {
       }
    });
 
-   // Eventos
+   // 🔹 Actualizar empleado
+   $(document).on('click', '.btn-update', function () {
+      const cedula = $(this).data('cedula');      // Obtiene la cédula del botón
+      const $button = $(this);                    // Referencia al botón clickeado
+      const originalText = $button.html();        // Guarda el texto original del botón
+
+      // 🔸 Deshabilita el botón y muestra spinner
+      $button.prop('disabled', true).html(`
+         <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Cargando...</span>
+         </div>
+      `);
+
+      // 🔹 Limpia el formulario antes de llenarlo
+      const $form = $("#updateEmpleadoForm");
+      $form[0].reset();
+      $form.removeClass("was-validated").find(".is-valid, .is-invalid").removeClass("is-valid is-invalid");
+
+      // 🔹 Realiza la petición AJAX
+      $.ajax({
+         method: "GET",
+         url: `/empleados/${cedula}`,
+         dataType: "json"
+      }).done(function (response) {
+         // ✅ Si la respuesta es correcta
+         if (response.success && response.data) {
+            const empleado = response.data;
+
+            // Llena los campos del formulario
+            $form.find("#update_cedula").val(empleado.cedula);
+            $form.find("#update_primer_nombre").val(empleado.primer_nombre);
+            $form.find("#update_segundo_nombre").val(empleado.segundo_nombre);
+            $form.find("#update_primer_apellido").val(empleado.primer_apellido);
+            $form.find("#update_segundo_apellido").val(empleado.segundo_apellido);
+
+            // 🔹 Abre el modal una vez cargados los datos
+            $("#updateEmpleadoModal").modal('show');
+         } else {
+            // ⚠️ Si no se encontró el empleado
+            Toast.fire({
+               icon: "error",
+               title: response.message || "No se encontraron datos del empleado."
+            });
+         }
+      }).fail(function (xhr, status, error) {
+         // ❌ Si ocurre un error en la petición
+         console.error("Error al obtener el empleado:", error);
+         Toast.fire({
+            icon: "error",
+            title: "Ocurrió un error al obtener los datos del empleado."
+         });
+      }).always(function () {
+         // 🔹 Restaura el botón (se ejecuta tanto en éxito como en error)
+         $button.prop('disabled', false).html(originalText);
+      });
+   });
+
+   // 🔹 Evento para actualizar empleado desde el formulario de la modal
+   $(document).on("submit", "#updateEmpleadoForm", function (e) {
+      e.preventDefault();
+
+      const $form = $(this);
+      const cedula = $form.find("#update_cedula").val(); // Se obtiene la cédula del campo del formulario
+      const $submitBtn = $form.find('button[type="submit"]'); // Botón de envío
+      const originalText = $submitBtn.text(); // Guarda el texto original del botón
+
+      if (validarFormulario(this.id)) {
+         $.ajax({
+            method: "PUT",
+            url: `/empleados/${cedula}`,
+            data: $form.serialize(),
+            dataType: "json",
+            beforeSend: function () {
+               // 🔸 Desactiva el botón y muestra texto de carga
+               $submitBtn.prop("disabled", true).text("Actualizando...");
+            }
+         }).done(function (response) {
+            if (response.success) {
+               // ✅ Actualización exitosa
+               Toast.fire({
+                  icon: "success",
+                  title: response.message || "Empleado actualizado correctamente."
+               });
+
+               // 🔹 Cierra la modal
+               $("#updateEmpleadoModal").modal("hide");
+
+               // 🔹 Limpia el formulario
+               $form[0].reset();
+               $form
+                  .removeClass("was-validated")
+                  .find(".is-valid, .is-invalid")
+                  .removeClass("is-valid is-invalid");
+
+               // 🔹 Recarga la tabla sin reiniciar la página
+               tableEmpleados.ajax.reload(null, false);
+            } else {
+               // ⚠️ Error del servidor (por ejemplo, no se encontró el empleado)
+               Toast.fire({
+                  icon: "error",
+                  title: response.message || "No se pudo actualizar el empleado."
+               });
+
+               $("#updateEmpleadoModal").modal("hide");
+               $form[0].reset();
+               $form.removeClass("was-validated")
+                  .find(".is-valid, .is-invalid")
+                  .removeClass("is-valid is-invalid");
+            }
+         }).fail(function (xhr, status, error) {
+            console.error("❌ Error al actualizar empleado:", error);
+
+            Toast.fire({
+               icon: "error",
+               title: "Ocurrió un error al actualizar el empleado."
+            });
+
+            // 🔹 Cierra la modal y limpia el formulario
+            $("#updateEmpleadoModal").modal("hide");
+            $form[0].reset();
+            $form.removeClass("was-validated")
+               .find(".is-valid, .is-invalid")
+               .removeClass("is-valid is-invalid");
+         }).always(function () {
+            // 🔹 Restaura el botón
+            $submitBtn.prop("disabled", false).text(originalText);
+         });
+      } else {
+         // ❌ Si el formulario no pasa validación
+         Toast.fire({
+            icon: "error",
+            title: "Formulario inválido",
+            text: "Por favor, completa todos los campos requeridos."
+         });
+      }
+   });
+
+   // Eliminar
    $(document).on('click', '.btn-delete', function () {
-      const id = $(this).data('id');
+      const cedula = $(this).data('cedula');
       const $submitBtn = $(this);
 
       // Confirmación opcional (antes de eliminar)
@@ -356,14 +501,14 @@ $(document).ready(function () {
 
          // 🔄 Spinner antes de enviar
          $submitBtn.prop('disabled', true).html(`
-         <div class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Cargando...</span>
-         </div>
-      `);
+            <div class="spinner-border spinner-border-sm" role="status">
+               <span class="visually-hidden">Cargando...</span>
+            </div>
+         `);
 
          $.ajax({
             method: "DELETE",
-            url: `/empleados/${id}`,
+            url: `/empleados/${cedula}`,
          }).done(function (response) {
             Toast.fire({
                icon: "success",

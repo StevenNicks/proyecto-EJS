@@ -64,3 +64,20 @@ PROYECT/
 └── README.md                    # Documentación del proyecto
 
 ```
+
+---
+
+## ⚠️ Nota Importante sobre la Creación de Usuarios
+
+Antes de registrar un **usuario** dentro de la aplicación, debes asegurarte de que el **funcionario (empleado)** correspondiente ya exista en la base de datos.
+
+Cada usuario está vinculado a un funcionario mediante su **número de cédula (`empleado_cedula`)**, por lo que el registro de usuario **fallará** si ese funcionario no ha sido creado previamente.
+
+### 🧩 Flujo correcto de creación:
+
+1. Crear primero el **funcionario** en la sección de _Empleados_.
+2. Luego, registrar el **usuario** asociado usando la misma cédula.
+
+> 🔒 Esto garantiza la integridad de los datos y evita registros huérfanos en la tabla `usuarios`.
+
+---

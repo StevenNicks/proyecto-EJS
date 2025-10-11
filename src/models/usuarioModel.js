@@ -70,25 +70,84 @@ const UsuarioModel = {
    },
 
    /**
-   * Actualiza el empleado_id en la tabla usuario_empleado para un usuario específico.
-   * 
-   * @param {Object} params - Datos para la actualización.
-   * @param {number} params.usuario_id - ID del usuario.
-   * @param {number} params.empleado_id - Nuevo ID del empleado.
-   * @returns {Promise<Object>} Promesa que resuelve a un objeto con el número de filas afectadas.
-   * @throws {Error} Lanza un error de base de datos (ej. registro no encontrado o clave foránea inválida).
-   */
-   // updateEmpleadoId: async ({ usuario_id, empleado_id }) => {
-   //    try {
-   //       const [result] = await pool.query(
-   //          `UPDATE usuario_empleado SET empleado_id = ? WHERE usuario_id = ?`,
-   //          [empleado_id, usuario_id]
-   //       );
-   //       return { affectedRows: result.affectedRows };
-   //    } catch (error) {
-   //       throw error;
-   //    }
-   // },
+    * Actualiza los datos de un usuario existente en la base de datos.
+    * 
+    * @param {Object} usuario - Objeto con los datos actualizados del usuario.
+    * @param {number} usuario.usuario_id - ID del usuario a actualizar.
+    * @param {string} usuario.empleado_cedula - Nueva cédula del empleado asociado.
+    * @param {string} usuario.email - Nuevo correo electrónico.
+    * @param {string} usuario.password - Nueva contraseña (ya encriptada, si aplica).
+    * @param {number} usuario.rol_id - ID del nuevo rol asignado.
+    * @returns {Promise<Object>} Objeto con el estado de la operación y un mensaje descriptivo.
+    * @throws {Error} Si ocurre un error durante la actualización.
+    */
+   updateUsuarioById: async ({ usuario_id, empleado_cedula, email, password, rol_id }) => {
+      try {
+         // ...
+      } catch (error) {
+         throw error;
+      }
+   },
+
+   /**
+    * Elimina un usuario de la base de datos según su ID.
+    * 
+    * @param {number} usuario_id - ID del usuario que se desea eliminar.
+    * @returns {Promise<Object>} Objeto con el estado de la operación y un mensaje descriptivo.
+    * @throws {Error} Si ocurre un error durante la eliminación.
+    */
+   deleteUsuarioById: async (usuario_id) => {
+      try {
+         // ...
+      } catch (error) {
+         throw error;
+      }
+   },
+
+   /**
+    * Obtiene un conteo general de usuarios agrupados por rol.
+    * 
+    * Realiza una consulta SQL que:
+    * - Cuenta el total de empleados registrados.
+    * - Cuenta cuántos usuarios tienen rol de administrador.
+    * - Cuenta cuántos usuarios tienen rol de supervisor.
+    * 
+    * Si un empleado tiene múltiples roles, se le asigna prioridad:
+    *  1️⃣ Admin > 3️⃣ Supervisor > 2️⃣ Empleado.
+    * 
+    * @returns {Promise<Array>} Un arreglo con un único objeto que contiene:
+    *    {
+    *       total_empleados: number,
+    *       total_admins: number,
+    *       total_supervisores: number
+    *    }
+    * @throws {Error} Si ocurre un error en la base de datos.
+    */
+   getCountByRol: async () => {
+      try {
+         const [rows] = await pool.query(`
+            SELECT
+               (SELECT COUNT(*) FROM empleados) AS total_empleados,
+               SUM(CASE WHEN t.assigned_role = 1 THEN 1 ELSE 0 END)   AS total_admins,
+               SUM(CASE WHEN t.assigned_role = 3 THEN 1 ELSE 0 END)   AS total_supervisores
+            FROM (
+               SELECT empleado_cedula,
+                  CASE
+                     WHEN SUM(CASE WHEN rol_id = 1 THEN 1 ELSE 0 END) > 0 THEN 1  -- si tiene admin
+                     WHEN SUM(CASE WHEN rol_id = 3 THEN 1 ELSE 0 END) > 0 THEN 3  -- si NO tiene admin pero tiene supervisor
+                     WHEN SUM(CASE WHEN rol_id = 2 THEN 1 ELSE 0 END) > 0 THEN 2  -- si solo tiene empleado
+                     ELSE NULL
+                  END AS assigned_role
+               FROM usuarios
+            GROUP BY empleado_cedula
+            ) AS t;
+         `);
+         return rows;
+      } catch (error) {
+         console.error("❌ Error al contar usuarios por rol:", error);
+         throw error;
+      }
+   },
 };
 
 export default UsuarioModel;

@@ -23,7 +23,7 @@ const EmpleadoModel = {
    * @returns {Promise<Object|null>} Objeto con con los datos del empleado, o null si no existe.
    * @throws {Error} Error de base de datos.
    */
-   getEmpleadosByCedula: async (cedula) => {
+   getEmpleadoByCedula: async (cedula) => {
       try {
          const [rows] = await pool.query(`SELECT * FROM empleados WHERE cedula = ?`, [cedula]);
          return rows.length > 0 ? rows[0] : null;   // Devuelve los registros obtenidos
@@ -59,24 +59,61 @@ const EmpleadoModel = {
       }
    },
 
-   deleteEmpleadoById: async (id) => {
+   /**
+   * Actualiza la información de un empleado existente en la base de datos
+   * usando su número de cédula como identificador.
+   * 
+   * @param {Object} empleado - Objeto con los datos actualizados del empleado.
+   * @param {string} empleado.cedula - Número de cédula del empleado.
+   * @param {string} empleado.primer_nombre - Primer nombre actualizado.
+   * @param {string} empleado.segundo_nombre - Segundo nombre actualizado.
+   * @param {string} empleado.primer_apellido - Primer apellido actualizado.
+   * @param {string} empleado.segundo_apellido - Segundo apellido actualizado.
+   * @returns {Promise<Object>} Objeto con información sobre la actualización (por ejemplo, número de filas afectadas).
+   * @throws {Error} Si ocurre un error durante la actualización o si no se encuentra el empleado.
+   */
+   updateEmpleadoByCedula: async ({ cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido }) => {
       try {
          const [result] = await pool.query(
-            `DELETE FROM empleados WHERE id = ?`,
-            [id]
+            `UPDATE empleados 
+               SET primer_nombre = ?, segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?
+               WHERE cedula = ?`,
+            [primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, cedula]
          );
 
-         // result.affectedRows indica cuántas filas se eliminaron
+         // Devuelve cuántas filas fueron modificadas
+         return { affectedRows: result.affectedRows };
+      } catch (error) {
+         throw error;
+      }
+   },
+
+   /**
+    * Elimina un empleado de la base de datos según su cédula.
+    * 
+    * @param {string} cedula - Número de cédula del empleado a eliminar.
+    * @returns {Promise<Object>} Objeto con el estado y un mensaje del resultado.
+    * @throws {Error} Si ocurre un error durante la eliminación.
+    */
+   deleteEmpleadoByCedula: async (cedula) => {
+      try {
+         const [result] = await pool.query(
+            `DELETE FROM empleados WHERE cedula = ?`,
+            [cedula]
+         );
+
+         // Retorna un mensaje claro dependiendo del resultado
          return {
             success: result.affectedRows > 0,
-            message: result.affectedRows > 0
-               ? 'Empleado eliminado correctamente'
-               : 'No se encontró el empleado con ese ID'
+            message: result.affectedRows === 0
+               ? 'No se encontró el empleado con esa cédula.'
+               : 'Empleado eliminado correctamente.'
          };
       } catch (error) {
          throw error;
       }
    }
+
 };
 
 export default EmpleadoModel;

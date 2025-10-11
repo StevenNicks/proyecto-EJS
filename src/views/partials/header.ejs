@@ -12,10 +12,10 @@
             <li class="nav-item">
                <a class="nav-link active" aria-current="page" href="/api/empleados">Empleados</a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
+            </li> -->
+            <!-- <li class="nav-item dropdown">
                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                   aria-expanded="false">
                   Dropdown
@@ -28,10 +28,10 @@
                   </li>
                   <li><a class="dropdown-item" href="#">Something else here</a></li>
                </ul>
-            </li>
-            <li class="nav-item">
+            </li> -->
+            <!-- <li class="nav-item">
                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-            </li>
+            </li> -->
          </ul>
          <!-- Segundo dropdown (alineado a la derecha) -->
          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -47,10 +47,43 @@
                   <li>
                      <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                  <li><a class="dropdown-item text-danger" href="#" id="logoutBtn">Cerrar sesión</a></li>
                </ul>
             </li>
          </ul>
       </div>
    </div>
 </nav>
+
+<script>
+   document.addEventListener("DOMContentLoaded", () => {
+      const logoutLink = document.querySelector("#logoutBtn");
+
+      if (logoutLink) {
+         logoutLink.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const confirmLogout = confirm("¿Deseas cerrar sesión?");
+            if (!confirmLogout) return;
+
+            try {
+               const response = await fetch("/auth/logout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+               });
+
+               const data = await response.json();
+
+               if (data.success) {
+                  window.location.href = "/auth/login";
+               } else {
+                  alert(data.message || "Error al cerrar sesión.");
+               }
+            } catch (error) {
+               console.error("Error al cerrar sesión:", error);
+               alert("Ocurrió un error al cerrar sesión.");
+            }
+         });
+      }
+   });
+</script>
