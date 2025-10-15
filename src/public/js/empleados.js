@@ -47,15 +47,15 @@ $(document).ready(function () {
    // rol de la sesion
    let userRole = null;
 
-   // Carga datos de las cards
+   // 🔹 Carga datos de las cards
    cargarCards();
 
-   // Mostrar modal para crear empleado
+   // 🔹 Mostrar modal para crear empleado
    $("#agregar-empleado").on("click", function () {
       $("#createEmpleadoModal").modal('show');
    });
 
-   // Cerrar cualquier modal activa con el botón "X" y limpiar su formulario
+   // 🔹 Cerrar cualquier modal activa con el botón "X" y limpiar su formulario
    $(document).on("click", ".btn-close", function () {
       this.blur(); // Quita el foco del botón
 
@@ -76,7 +76,7 @@ $(document).ready(function () {
       }
    });
 
-   // Inicialización de DataTable (Empleados)
+   // 🔹 Inicialización de DataTable (Empleados)
    const tableEmpleados = $("#example").DataTable({
       language: {
          decimal: ",",
@@ -240,12 +240,12 @@ $(document).ready(function () {
       }
    });
 
-   // Redibujar íconos al cambiar de página en la tabla
+   // 🔹 Redibujar íconos al cambiar de página en la tabla
    tableEmpleados.on('draw', function () {
       lucide.createIcons(); // vuelve a renderizar los íconos Lucide
    });
 
-   // Copiar cédula al portapapeles
+   // 🔹 Copiar cédula al portapapeles
    $(document).on('click', '.cedula-clickable', function () {
       const cedula = $(this).data('cedula');
       const span = $(this);
@@ -259,7 +259,7 @@ $(document).ready(function () {
       });
    });
 
-   // 🔄 Mantener visibilidad de columnas según rol tras recarga
+   // 🔹 Mantener visibilidad de columnas según rol tras recarga
    tableEmpleados.on('xhr.dt', function (e, settings, json) {
       userRole = json.user?.rol;
       if (userRole !== 1 && userRole !== 3) {
@@ -275,7 +275,7 @@ $(document).ready(function () {
       }
    });
 
-   // Envío y validación de formulario Empleado
+   // 🔹 Envío y validación de formulario Empleado
    $(document).on("submit", "#empleadoForm", function (e) {
       e.preventDefault();
 
@@ -483,7 +483,7 @@ $(document).ready(function () {
       }
    });
 
-   // Eliminar
+   // 🔹 Eliminar
    $(document).on('click', '.btn-delete', function () {
       const cedula = $(this).data('cedula');
       const $submitBtn = $(this);
