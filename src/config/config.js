@@ -10,5 +10,3 @@ export const DB_PORT = process.env.DB_PORT || 3306 || 3307
 
 export const SESSION_SECRET = process.env.SESSION_SECRET || 'secret' // Clave secreta para sesiones
 export const JWT_SECRET = process.env.JWT_SECRET || 'secret'
-
-
