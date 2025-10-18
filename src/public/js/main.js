@@ -41,3 +41,81 @@ const Toast = Swal.mixin({
       toast.onmouseleave = Swal.resumeTimer;
    }
 });
+
+function cargarCards() {
+   $.ajax({
+      method: "GET",
+      url: "/usuarios/count-by-rol", // ✅ Nueva ruta correcta
+      dataType: "json",
+   }).done(function (response) {
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
+         // 👇 Extraemos el primer objeto del array
+         const { total_empleados, total_admins, total_supervisores } = response.data[0];
+
+         const container = $("#cards");
+         container.empty(); // 🔄 Limpia antes de insertar nuevas tarjetas
+
+         const roles = [
+            { nombre: "Empleado", total: total_empleados, icono: "users-round" },
+            { nombre: "Supervisor", total: total_supervisores, icono: "user-round-pen" },
+            { nombre: "Admin", total: total_admins, icono: "shield-user" }
+         ];
+
+         roles.forEach(({ nombre, total, icono }) => {
+            const card = `
+               <div class="col-12 col-sm-12 col-md-4 mb-3">
+                  <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
+                     <h3 class="fw-semibold mb-2 d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="${icono}" width="25" height="25" stroke-width="2.5"></i>
+                        <span>${nombre}s</span>
+                     </h3>
+                     <p class="mt-2 mb-0">${total} ${nombre}s</p>
+                  </div>
+               </div>
+            `;
+            container.append(card);
+         });
+
+         if (window.lucide) lucide.createIcons(); // ✅ Regenera íconos
+      } else {
+         console.warn("⚠️ No se encontraron datos válidos en la respuesta.");
+      }
+   }).fail(function (xhr, status, error) {
+      console.warn("⚠️ Error HTTP:", xhr.status, error);
+   });
+}
+
+// 🔹 Cerrar cualquier modal activa con el botón "X" y limpiar su formulario
+$(document).on("click", ".btn-close", function () {
+   this.blur(); // Quita el foco del botón
+
+   // Obtiene el modal donde está el botón de cierre
+   const $modal = $(this).closest(".modal");
+
+   // Cierra el modal manualmente (por seguridad)
+   $modal.modal("hide");
+
+   // Busca y limpia el formulario dentro del modal (si existe)
+   const $form = $modal.find("form");
+   if ($form.length) {
+      $form[0].reset(); // Limpia los valores del formulario
+      $form
+         .removeClass("was-validated") // Quita la clase general de validación
+         .find(".is-valid, .is-invalid") // Limpia los estados de validación
+         .removeClass("is-valid is-invalid");
+   }
+});
+
+// 🔹 Copiar cédula al portapapeles
+$(document).on('click', '.cedula-clickable', function () {
+   const cedula = $(this).data('cedula');
+   const span = $(this);
+
+   navigator.clipboard.writeText(cedula).then(() => {
+      span.attr('data-bs-original-title', '¡Copiado!').tooltip('show');
+
+      setTimeout(() => {
+         span.attr('data-bs-original-title', 'Copiar cédula');
+      }, 1000);
+   });
+});

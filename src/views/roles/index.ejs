@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+   <%- include('../partials/header') %>
+
+      <body>
+         <div class="container-fluid container-md py-4">
+            <!-- Fila que organiza las columnas -->
+            <div class="row g-3 mb-3" id="cards">
+               <!-- cards -->
+            </div>
+
+            <!-- Boton agregar rol -->
+            <% if (user && (user.rol===1 || user.rol===3)) { %>
+               <div class="row g-3 mb-3">
+                  <div class="col-12 col-sm-12 col-md-12">
+                     <div class="custom-card bg-light p-3 text-start border border-2 rounded">
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
+                           id="agregar-rol">
+                           <i data-lucide="user-star" width="20" height="20"></i>
+                           Agregar rol
+                        </button>
+                     </div>
+                  </div>
+               </div>
+               <% } %>
+
+                  <div class="row g-3 mb-3">
+                     <div class="col-12">
+                        <div class="custom-card bg-light p-3 border border-2 rounded">
+                           <div class="table-responsive">
+                              <table id="example" class="table table-bordered table-striped-columns table-hover">
+                                 <thead>
+                                    <tr>
+                                       <th scope="col">#</th>
+                                       <th scope="col">nombre</th>
+                                       <th scope="col">descripcion</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Modal create -->
+                  <div class="modal fade" id="createRolModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="createRolModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="createRolModalLabel">Crear un rol</h1>
+                              <button type="button" class="btn-close" id="createRolModalBtnClose"></button>
+                           </div>
+                           <div class="modal-body">
+                              <form id="rolForm" action="/roles" method="post" class="row g-3 needs-validation"
+                                 novalidate>
+                                 <div class="col-md-12">
+                                    <label for="nombre" class="form-label">Nombre del rol</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre"
+                                       placeholder="Nombre abreviado ej: Admin" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="descripcion" class="form-label">Descripcion</label>
+                                    <input type="text" class="form-control" id="descripcion" name="descripcion"
+                                       placeholder="Descripcion ej: Administrador del sistema">
+                                 </div>
+                                 <div class="my-3">
+
+                                 </div>
+                                 <div class="d-grid">
+                                    <button class="btn btn-outline-primary" type="submit">Crear rol</button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Modal update -->
+                  <div class="modal fade" id="updateEmpleadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="updateEmpleadoModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="updateEmpleadoModalLabel">Crear un empleado</h1>
+                              <button type="button" class="btn-close" id="updateEmpleadoModalBtnClose"></button>
+                           </div>
+                           <div class="modal-body">
+                              <form id="updateEmpleadoForm" class="row g-3 needs-validation" novalidate>
+                                 <div class="col-md-12">
+                                    <label for="update_cedula" class="form-label">Numero de cedula</label>
+                                    <input type="number" class="form-control no-arrow" id="update_cedula"
+                                       name="update_cedula" placeholder="Numero de cedula" min="1000000"
+                                       max="9999999999" required readonly>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_primer_nombre" class="form-label">Primer nombre</label>
+                                    <input type="text" class="form-control" id="update_primer_nombre" update_
+                                       name="primer_nombre" placeholder="Primer nombre" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_segundo_nombre" class="form-label">Segundo nombre</label>
+                                    <input type="text" class="form-control" id="update_segundo_nombre" update_
+                                       name="segundo_nombre" placeholder="Segundo nombre">
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_primer_apellido" class="form-label">Primer apellido</label>
+                                    <input type="text" class="form-control" id="update_primer_apellido" update_
+                                       name="primer_apellido" placeholder="Primer apellido" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_segundo_apellido" class="form-label">Segundo apellido</label>
+                                    <input type="text" class="form-control" id="update_segundo_apellido" update_
+                                       name="segundo_apellido" placeholder="Segundo apellido">
+                                 </div>
+                                 <div class="my-3">
+
+                                 </div>
+                                 <div class="d-grid">
+                                    <button class="btn btn-outline-primary" type="submit">Actuzalizar
+                                       funcionario</button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+         </div>
+
+
+         <%- include('../partials/scripts') %>
+            <script src="/js/roles.js"></script>
+      </body>
+
+</html>

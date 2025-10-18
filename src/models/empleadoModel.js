@@ -113,7 +113,6 @@ const EmpleadoModel = {
          throw error;
       }
    }
-
 };
 
 export default EmpleadoModel;

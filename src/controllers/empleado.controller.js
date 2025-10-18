@@ -52,15 +52,15 @@ export const getAllEmpleados = async (req, res, next) => {
  * @param {Function} next - Función para pasar al siguiente middleware.
  * @returns {void} Devuelve una respuesta JSON con los datos del empleado.
  */
-export const getAllEmpleadoByCedula = async (req, res, next) => {
+export const getEmpleadoByCedula = async (req, res, next) => {
    const { cedula } = req.params; // Extrae la cédula desde los parámetros de la ruta
 
    try {
       // Consulta los datos del empleado en el modelo
-      const row = await EmpleadoModel.getEmpleadoByCedula(cedula);
+      const empleado = await EmpleadoModel.getEmpleadoByCedula(cedula);
 
       // Devuelve la respuesta exitosa con los datos del empleado
-      res.status(200).json({ success: true, data: row });
+      res.status(200).json({ success: true, data: empleado });
    } catch (error) {
       next(error);
    }

@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public"))); // app.use(express.stat
 import authRoutes from './routes/auth.routes.js';
 import empleadoRoutes from './routes/empleado.routes.js';
 import usuarioRoutes from './routes/usuario.routes.js';
-// import rolRoutes from './routes/rol.routes.js';
+import rolRoutes from './routes/rol.routes.js';
 
 import errorRoutes from './routes/error.route.js';
 
@@ -43,7 +43,7 @@ app.get(['/', '/auth'], (req, res) => res.redirect('/auth/login'));
 app.use('/auth', authRoutes);
 app.use('/empleados', empleadoRoutes);
 app.use('/usuarios', usuarioRoutes);
-// app.use('/roles', rolRoutes);
+app.use('/roles', rolRoutes);
 
 app.use('/error', errorRoutes);
 

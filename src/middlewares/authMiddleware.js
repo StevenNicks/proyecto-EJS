@@ -19,6 +19,6 @@ export function authMiddleware(req, res, next) {
       next();
    } else {
       // Usuario no autenticado, redireccionar al login
-      res.render("auth/login", { title: "Login" });
+      res.redirect("auth/login");
    }
 }

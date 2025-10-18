@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
    renderEmpleados,
    getAllEmpleados,
-   getAllEmpleadoByCedula,
+   getEmpleadoByCedula,
    createEmpleado,
    updateEmpleadoByCedula,
    deleteEmpleadoByCedula,
@@ -25,7 +25,7 @@ const router = Router();
  */
 router.get('/', authMiddleware, renderEmpleados);
 router.get('/data', authMiddleware, getAllEmpleados);
-router.get('/:cedula', authMiddleware, getAllEmpleadoByCedula);
+router.get('/:cedula', authMiddleware, getEmpleadoByCedula);
 router.post('/', authMiddleware, createEmpleado);
 router.put('/:cedula', authMiddleware, updateEmpleadoByCedula);
 router.delete('/:cedula', authMiddleware, deleteEmpleadoByCedula);
