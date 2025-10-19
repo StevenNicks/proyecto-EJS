@@ -37,19 +37,18 @@ const UsuarioModel = {
    */
    getUsuarioByEmail: async (email) => {
       try {
-         const [rows] = await pool.query(
-            `SELECT u.*, 
-               CONCAT(
-                  COALESCE(e.primer_nombre, ''), ' ',
-                  COALESCE(e.segundo_nombre, ''), ' ',
-                  COALESCE(e.primer_apellido, ''), ' ',
-                  COALESCE(e.segundo_apellido, '')
-               ) AS usuario
-               FROM usuarios u
-               LEFT JOIN empleados e ON u.empleado_cedula = e.cedula
-               WHERE email = ?`,
-            [email]
-         );
+         const [rows] = await pool.query(`
+            SELECT 
+               u.*, 
+               CONCAT_WS(' ', e.primer_nombre, 
+                           e.segundo_nombre, 
+                           e.primer_apellido, 
+                           e.segundo_apellido) 
+               AS usuario
+            FROM usuarios u
+            LEFT JOIN empleados e ON u.empleado_cedula = e.cedula
+            WHERE email = ?;
+         `, [email]);
          return rows.length > 0 ? rows[0] : null;
       } catch (error) {
          throw error;
@@ -82,35 +81,69 @@ const UsuarioModel = {
    },
 
    /**
-    * Actualiza los datos de un usuario existente en la base de datos.
+    * Actualiza la información de un usuario existente.
     * 
-    * @param {Object} usuario - Objeto con los datos actualizados del usuario.
-    * @param {number} usuario.usuario_id - ID del usuario a actualizar.
+    * @param {Object} usuario - Datos del usuario a actualizar.
+    * @param {number} usuario.usuario_id - ID del usuario a modificar.
     * @param {string} usuario.empleado_cedula - Nueva cédula del empleado asociado.
     * @param {string} usuario.email - Nuevo correo electrónico.
-    * @param {string} usuario.password - Nueva contraseña (ya encriptada, si aplica).
-    * @param {number} usuario.rol_id - ID del nuevo rol asignado.
-    * @returns {Promise<Object>} Objeto con el estado de la operación y un mensaje descriptivo.
-    * @throws {Error} Si ocurre un error durante la actualización.
+    * @param {string|null} usuario.password - Contraseña encriptada (opcional, solo si se cambia).
+    * @param {number} usuario.rol_id - ID del rol asignado.
+    * 
+    * @returns {Promise<Object>} Resultado con la cantidad de filas afectadas.
+    * @throws {Error} Si ocurre un error en la consulta SQL.
     */
+
    updateUsuarioById: async ({ usuario_id, empleado_cedula, email, password, rol_id }) => {
       try {
-         // ...
+         let query = `
+         UPDATE usuarios 
+         SET empleado_cedula = ?, email = ?, rol_id = ?
+      `;
+         const params = [empleado_cedula, email, rol_id];
+
+         // Si hay una nueva contraseña, la incluye
+         if (password) {
+            query = `
+            UPDATE usuarios 
+            SET empleado_cedula = ?, email = ?, password = ?, rol_id = ?
+            WHERE id = ?
+         `;
+            params.splice(2, 0, password); // inserta password en la posición 3
+            params.push(usuario_id);
+         } else {
+            query += ` WHERE id = ?`;
+            params.push(usuario_id);
+         }
+
+         const [result] = await pool.query(query, params);
+         return { affectedRows: result.affectedRows };
       } catch (error) {
          throw error;
       }
    },
 
    /**
-    * Elimina un usuario de la base de datos según su ID.
+    * Elimina un usuario de la base de datos según su id.
     * 
-    * @param {number} usuario_id - ID del usuario que se desea eliminar.
-    * @returns {Promise<Object>} Objeto con el estado de la operación y un mensaje descriptivo.
+    * @param {string} id - Número de cédula del empleado a eliminar.
+    * @returns {Promise<Object>} Objeto con el estado y un mensaje del resultado.
     * @throws {Error} Si ocurre un error durante la eliminación.
     */
-   deleteUsuarioById: async (usuario_id) => {
+   deleteUsuarioById: async (id) => {
       try {
-         // ...
+         const [result] = await pool.query(
+            `DELETE FROM usuarios WHERE id = ?`,
+            [id]
+         );
+
+         // Retorna un mensaje claro dependiendo del resultado
+         return {
+            success: result.affectedRows > 0,
+            message: result.affectedRows === 0
+               ? 'No se encontró el usuario con ese id.'
+               : 'Usuario eliminado correctamente.'
+         };
       } catch (error) {
          throw error;
       }

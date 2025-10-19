@@ -61,20 +61,31 @@
                               <form id="usuarioForm" action="/usuarios" method="post" class="row g-3 needs-validation"
                                  novalidate>
                                  <div class="col-md-12">
-                                    <label for="nombre" class="form-label">Nombre del rol</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre"
-                                       placeholder="Nombre abreviado ej: Admin" required>
+                                    <label for="cedula" class="form-label">Cedula empleado</label>
+                                    <select class="form-select" id="cedula" name="cedula" required>
+                                       <option selected disabled value="">Selecciona un empleado</option>
+                                    </select>
                                  </div>
                                  <div class="col-md-12">
-                                    <label for="descripcion" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control" id="descripcion" name="descripcion"
-                                       placeholder="Descripcion ej: Administrador del sistema">
+                                    <label for="empleado" class="form-label">Nomber empleado</label>
+                                    <input type="text" class="form-control" id="empleado"
+                                       placeholder="Nombre completo del empleado" disabled readonly>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                       placeholder="Email ej: email@example.com">
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="password" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="********">
                                  </div>
                                  <div class="my-3">
 
                                  </div>
                                  <div class="d-grid">
-                                    <button class="btn btn-outline-primary" type="submit">Crear rol</button>
+                                    <button class="btn btn-outline-primary" type="submit">Crear usuario</button>
                                  </div>
                               </form>
                            </div>
@@ -94,19 +105,36 @@
                            <div class="modal-body">
                               <form id="updateUsuarioForm" class="row g-3 needs-validation" novalidate>
                                  <div class="col-md-12">
-                                    <label for="update_id" class="form-label">Codigo del rol</label>
-                                    <input type="number" class="form-control no-arrow" id="update_id" name="update_id"
-                                       placeholder="Codigo del rol" required readonly>
+                                    <label for="usuario_id" class="form-label">Codigo de usuario</label>
+                                    <input type="text" class="form-control" id="usuario_id" name="usuario_id"
+                                       placeholder="Nombre completo del empleado" disabled readonly>
                                  </div>
                                  <div class="col-md-12">
-                                    <label for="update_nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="update_nombre" name="nombre"
-                                       placeholder="Nombre del rol" required>
+                                    <label for="update_cedula" class="form-label">Cedula empleado</label>
+                                    <select class="form-select" id="update_cedula" name="update_cedula" required>
+                                       <!-- se carga desde el js -->
+                                    </select>
                                  </div>
                                  <div class="col-md-12">
-                                    <label for="update_descripcion" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control" id="update_descripcion" name="descripcion"
-                                       placeholder="Descripcion ej: Administrador del sistema">
+                                    <label for="update_empleado" class="form-label">Nomber empleado</label>
+                                    <input type="text" class="form-control" id="update_empleado"
+                                       placeholder="Nombre completo del empleado" disabled readonly>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="update_email" name="update_email"
+                                       placeholder="Email ej: email@example.com" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_password" class="form-label">Contraseña</label>
+                                    <input type="password" class="form-control" id="update_password"
+                                       name="update_password" placeholder="********" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="rol" class="form-label">Rol de usuario</label>
+                                    <select class="form-select" id="rol" name="rol" required>
+                                       <!-- se carga desde el js -->
+                                    </select>
                                  </div>
                                  <div class="my-3">
 

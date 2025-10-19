@@ -48,6 +48,8 @@ function cargarCards() {
       url: "/usuarios/count-by-rol", // ✅ Nueva ruta correcta
       dataType: "json",
    }).done(function (response) {
+      // console.log(response);
+      
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
          // 👇 Extraemos el primer objeto del array
          const { total_empleados, total_admins, total_supervisores } = response.data[0];
@@ -84,6 +86,28 @@ function cargarCards() {
       console.warn("⚠️ Error HTTP:", xhr.status, error);
    });
 }
+
+function getAllEmpleados() {
+   return $.ajax({
+      method: "GET",
+      url: "/empleados/data", // ✅ Nueva ruta correcta
+      dataType: "json",
+   }).fail(function (xhr, status, error) {
+      console.warn("⚠️ Error al obtener empleados:", xhr.status, error);
+      throw error;
+   });
+}
+
+function getAllRoles() {
+   return $.ajax({
+      method: "GET",
+      url: "/roles/data", // ✅ Nueva ruta correcta
+      dataType: "json",
+   }).fail(function (xhr, status, error) {
+      console.warn("⚠️ Error al obtener roles:", xhr.status, error);
+      throw error;
+   });
+};
 
 // 🔹 Cerrar cualquier modal activa con el botón "X" y limpiar su formulario
 $(document).on("click", ".btn-close", function () {
