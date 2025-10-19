@@ -23,7 +23,7 @@ const RolModel = {
     * @returns {Promise<Objet|null>} Objeto con con los datos del rol, o null si no existe.
     * @throws {Error} Error de base de datos.
     */
-   getEmpleadoById: async (id) => {
+   getRolById: async (id) => {
       try {
          const [rows] = await pool.query(`SELECT * FROM roles WHERE id = ?`, [id]);
          return rows.length > 0 ? rows[0] : null;   // Devuelve los registros obtenidos
@@ -58,6 +58,32 @@ const RolModel = {
    },
 
    /**
+    * Actualiza la información de un rol existente en la base de datos
+    * usando su número de id como identificador.
+    * 
+    * @param {Object} rol - Objeto con los datos actualizados del rol.
+    * @param {string} rol.id - id del rol.
+    * @param {string} rol.nombre - Nombre del rol actualizado.
+    * @param {string} rol.descripcion - Descripcion del rol actualizado.
+    * @returns 
+    */
+   updateRolById: async ({ id, nombre, descripcion }) => {
+      try {
+         const [result] = await pool.query(
+            `UPDATE roles 
+               SET nombre = ?, descripcion = ?
+               WHERE id = ?`,
+            [nombre, descripcion, id]
+         );
+
+         // Devuelve cuántas filas fueron modificadas
+         return { affectedRows: result.affectedRows };
+      } catch (error) {
+         throw error;
+      }
+   },
+
+   /**
     * Elimina un rol de la base de datos según su id.
     * 
     * @param {string} id - Número de id del rol a eliminar.
@@ -67,7 +93,7 @@ const RolModel = {
    deleteRolById: async (id) => {
       try {
          const [result] = await pool.query(
-            `DELETE FROM rol WHERE cedula = ?`,
+            `DELETE FROM roles WHERE id = ?`,
             [id]
          );
 

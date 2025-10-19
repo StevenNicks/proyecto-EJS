@@ -81,47 +81,36 @@
                   </div>
 
                   <!-- Modal update -->
-                  <div class="modal fade" id="updateEmpleadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
-                     tabindex="-1" aria-labelledby="updateEmpleadoModalLabel" aria-hidden="true">
+                  <div class="modal fade" id="updateRolModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="updateRolModalLabel" aria-hidden="true">
                      <div class="modal-dialog">
                         <div class="modal-content">
                            <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="updateEmpleadoModalLabel">Crear un empleado</h1>
-                              <button type="button" class="btn-close" id="updateEmpleadoModalBtnClose"></button>
+                              <h1 class="modal-title fs-5" id="updateRolModalLabel">Actualizar un rol</h1>
+                              <button type="button" class="btn-close" id="updateRolModalBtnClose"></button>
                            </div>
                            <div class="modal-body">
-                              <form id="updateEmpleadoForm" class="row g-3 needs-validation" novalidate>
+                              <form id="updateRolForm" class="row g-3 needs-validation" novalidate>
                                  <div class="col-md-12">
-                                    <label for="update_cedula" class="form-label">Numero de cedula</label>
-                                    <input type="number" class="form-control no-arrow" id="update_cedula"
-                                       name="update_cedula" placeholder="Numero de cedula" min="1000000"
-                                       max="9999999999" required readonly>
+                                    <label for="update_id" class="form-label">Codigo del rol</label>
+                                    <input type="number" class="form-control no-arrow" id="update_id"
+                                       name="update_id" placeholder="Codigo del rol" required readonly>
                                  </div>
                                  <div class="col-md-12">
-                                    <label for="update_primer_nombre" class="form-label">Primer nombre</label>
-                                    <input type="text" class="form-control" id="update_primer_nombre" update_
-                                       name="primer_nombre" placeholder="Primer nombre" required>
+                                    <label for="update_nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="update_nombre"
+                                       name="nombre" placeholder="Nombre del rol" required>
                                  </div>
                                  <div class="col-md-12">
-                                    <label for="update_segundo_nombre" class="form-label">Segundo nombre</label>
-                                    <input type="text" class="form-control" id="update_segundo_nombre" update_
-                                       name="segundo_nombre" placeholder="Segundo nombre">
-                                 </div>
-                                 <div class="col-md-12">
-                                    <label for="update_primer_apellido" class="form-label">Primer apellido</label>
-                                    <input type="text" class="form-control" id="update_primer_apellido" update_
-                                       name="primer_apellido" placeholder="Primer apellido" required>
-                                 </div>
-                                 <div class="col-md-12">
-                                    <label for="update_segundo_apellido" class="form-label">Segundo apellido</label>
-                                    <input type="text" class="form-control" id="update_segundo_apellido" update_
-                                       name="segundo_apellido" placeholder="Segundo apellido">
+                                    <label for="update_descripcion" class="form-label">Descripcion</label>
+                                    <input type="text" class="form-control" id="update_descripcion"
+                                       name="descripcion" placeholder="Descripcion ej: Administrador del sistema">
                                  </div>
                                  <div class="my-3">
 
                                  </div>
                                  <div class="d-grid">
-                                    <button class="btn btn-outline-primary" type="submit">Actuzalizar
+                                    <button class="btn btn-outline-primary" type="submit">Actualizar
                                        funcionario</button>
                                  </div>
                               </form>

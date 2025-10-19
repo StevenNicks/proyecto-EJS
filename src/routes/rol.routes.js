@@ -3,8 +3,9 @@ import {
    renderRoles,
    getAllRoles,
    getRolById,
+   createRol,
+   updateRolById,
    deleteRolById,
-   createRol
 } from '../controllers/rol.controller.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 
@@ -24,6 +25,7 @@ router.get('/', authMiddleware, renderRoles);
 router.get('/data', authMiddleware, getAllRoles);
 router.get('/:id', authMiddleware, getRolById);
 router.post('/', authMiddleware, createRol);
+router.put('/:id', authMiddleware, updateRolById);
 router.delete('/:id', authMiddleware, deleteRolById);
 
 export default router;

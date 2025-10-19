@@ -5,12 +5,12 @@ $(document).ready(function () {
    // 🔹 Carga datos de las cards
    cargarCards(); // function -> main.js
 
-   // 🔹 Mostrar modal para crear empleado
+   // 🔹 Mostrar modal para crear rol
    $("#agregar-rol").on("click", function () {
       $("#createRolModal").modal('show');
    });
 
-   // 🔹 Inicialización de DataTable (Empleados)
+   // 🔹 Inicialización de DataTable (roles)
    const tableRoles = $("#example").DataTable({
       language: {
          decimal: ",",
@@ -177,7 +177,7 @@ $(document).ready(function () {
                // Si el backend devuelve success = false (por ejemplo validaciones)
                Toast.fire({
                   icon: "error",
-                  title: response.message || "Ocurrió un error al crear el empleado."
+                  title: response.message || "Ocurrió un error al crear el rol."
                });
             }
          }).fail(function (xhr, status, error) {
@@ -199,6 +199,144 @@ $(document).ready(function () {
          });
       } else {
          console.log("❌ Formulario inválido");
+         Toast.fire({
+            icon: "error",
+            title: "Formulario inválido",
+            text: "Por favor, completa todos los campos requeridos."
+         });
+      }
+   });
+
+   // 🔹 Actualizar rol
+   $(document).on('click', '.btn-update', function () {
+      const id = $(this).data('id');      // Obtiene la cédula del botón
+      console.log(id);
+      
+      const $button = $(this);                    // Referencia al botón clickeado
+      const originalText = $button.html();        // Guarda el texto original del botón
+
+      // 🔸 Deshabilita el botón y muestra spinner
+      $button.prop('disabled', true).html(`
+         <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Cargando...</span>
+         </div>
+      `);
+
+      // 🔹 Limpia el formulario antes de llenarlo
+      const $form = $("#updateRolForm");
+      $form[0].reset();
+      $form.removeClass("was-validated").find(".is-valid, .is-invalid").removeClass("is-valid is-invalid");
+
+      // 🔹 Realiza la petición AJAX
+      $.ajax({
+         method: "GET",
+         url: `/roles/${id}`,
+         dataType: "json"
+      }).done(function (response) {
+         // ✅ Si la respuesta es correcta
+         if (response.success && response.data) {
+            const rol = response.data;
+            console.log(rol);
+
+            // Llena los campos del formulario
+            $form.find("#update_id").val(rol.id);
+            $form.find("#update_nombre").val(rol.nombre);
+            $form.find("#update_descripcion").val(rol.descripcion);
+
+            // 🔹 Abre el modal una vez cargados los datos
+            $("#updateRolModal").modal('show');
+         } else {
+            // ⚠️ Si no se encontró el rol
+            Toast.fire({
+               icon: "error",
+               title: response.message || "No se encontraron datos del rol."
+            });
+         }
+      }).fail(function (xhr, status, error) {
+         // ❌ Si ocurre un error en la petición
+         console.error("Error al obtener el rol:", error);
+         Toast.fire({
+            icon: "error",
+            title: "Ocurrió un error al obtener los datos del rol."
+         });
+      }).always(function () {
+         // 🔹 Restaura el botón (se ejecuta tanto en éxito como en error)
+         $button.prop('disabled', false).html(originalText);
+      });
+   });
+
+   // 🔹 Evento para actualizar rol desde el formulario de la modal
+   $(document).on("submit", "#updateRolForm", function (e) {
+      e.preventDefault();
+
+      const $form = $(this);
+      const id = $form.find("#update_id").val(); // Se obtiene la id del campo del formulario
+      const $submitBtn = $form.find('button[type="submit"]'); // Botón de envío
+      const originalText = $submitBtn.text(); // Guarda el texto original del botón
+
+      if (validarFormulario(this.id)) {
+         $.ajax({
+            method: "PUT",
+            url: `/roles/${id}`,
+            data: $form.serialize(),
+            dataType: "json",
+            beforeSend: function () {
+               // 🔸 Desactiva el botón y muestra texto de carga
+               $submitBtn.prop("disabled", true).text("Actualizando...");
+            }
+         }).done(function (response) {
+            if (response.success) {
+               // ✅ Actualización exitosa
+               Toast.fire({
+                  icon: "success",
+                  title: response.message || "Rol actualizado correctamente."
+               });
+
+               // 🔹 Cierra la modal
+               $("#updateRolModal").modal("hide");
+
+               // 🔹 Limpia el formulario
+               $form[0].reset();
+               $form
+                  .removeClass("was-validated")
+                  .find(".is-valid, .is-invalid")
+                  .removeClass("is-valid is-invalid");
+
+               // 🔹 Recarga la tabla sin reiniciar la página
+               tableRoles.ajax.reload(null, false);
+            } else {
+               // ⚠️ Error del servidor (por ejemplo, no se encontró el rol)
+               Toast.fire({
+                  icon: "error",
+                  title: response.message || "No se pudo actualizar el rol."
+               });
+
+               $("#updateRolModal").modal("hide");
+               $form[0].reset();
+               $form.removeClass("was-validated")
+                  .find(".is-valid, .is-invalid")
+                  .removeClass("is-valid is-invalid");
+            }
+         }).fail(function (xhr, status, error) {
+            console.error("❌ Error al actualizar rol:", error);
+
+            Toast.fire({
+               icon: "error",
+               title: "Ocurrió un error al actualizar el rol."
+            });
+
+            // 🔹 Cierra la modal y limpia el formulario
+            $("#updateRolModal").modal("hide");
+            $form[0].reset();
+            $form.removeClass("was-validated")
+               .find(".is-valid, .is-invalid")
+               .removeClass("is-valid is-invalid");
+         }).always(function () {
+            // 🔹 Restaura el botón
+            $submitBtn.prop("disabled", false).text(originalText);
+         });
+      } else {
+         // ❌ Si el formulario no pasa validación
          Toast.fire({
             icon: "error",
             title: "Formulario inválido",
