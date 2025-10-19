@@ -9,7 +9,19 @@ const UsuarioModel = {
    */
    getAllUsuarios: async () => {
       try {
-         const [rows] = await pool.query('SELECT * FROM usuarios');
+         const [rows] = await pool.query(`
+            SELECT 
+               u.*, 
+               CONCAT_WS(' ', e.primer_nombre, 
+                           e.segundo_nombre, 
+                           e.primer_apellido, 
+                           e.segundo_apellido) 
+               AS nombre_completo,
+               r.nombre AS nombre_rol
+            FROM usuarios u
+            LEFT JOIN empleados e ON u.empleado_cedula = e.cedula
+            LEFT JOIN roles r ON u.rol_id = r.id
+         `);
          return rows;
       } catch (error) {
          throw error;

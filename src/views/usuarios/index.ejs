@@ -16,9 +16,9 @@
                   <div class="col-12 col-sm-12 col-md-12">
                      <div class="custom-card bg-light p-3 text-start border border-2 rounded">
                         <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
-                           id="agregar-tamizaje">
+                           id="agregar-usuario">
                            <i data-lucide="user-star" width="20" height="20"></i>
-                           Agregar Tamizaje
+                           Agregar Usuario
                         </button>
                      </div>
                   </div>
@@ -33,13 +33,14 @@
                                  <thead>
                                     <tr>
                                        <th scope="col">#</th>
-                                       <th scope="col">nombre</th>
-                                       <th scope="col">estado</th>
+                                       <th scope="col">cedula</th>
+                                       <th scope="col">usuario</th>
+                                       <th scope="col">email_usuario</th>
+                                       <th scope="col">rol</th>
                                     </tr>
                                  </thead>
                                  <tbody>
                                     <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
-
                                  </tbody>
                               </table>
                            </div>
@@ -123,7 +124,7 @@
 
 
          <%- include('../partials/scripts') %>
-            <script src="/js/tamizajes.js"></script>
+            <script src="/js/usuarios.js"></script>
       </body>
 
 </html>

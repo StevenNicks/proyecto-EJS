@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, "public"))); // app.use(express.stat
 
 // Importar las rutas principales
 import authRoutes from './routes/auth.routes.js';
+import tamizajeRoutes from './routes/tamizaje.routes.js';
 import empleadoRoutes from './routes/empleado.routes.js';
 import usuarioRoutes from './routes/usuario.routes.js';
 import rolRoutes from './routes/rol.routes.js';
@@ -41,6 +42,7 @@ app.get(['/', '/auth'], (req, res) => res.redirect('/auth/login'));
 
 // Rutas
 app.use('/auth', authRoutes);
+app.use('/tamizajes', tamizajeRoutes);
 app.use('/empleados', empleadoRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/roles', rolRoutes);

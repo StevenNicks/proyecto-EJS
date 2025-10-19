@@ -154,7 +154,6 @@ $(document).ready(function () {
             title: 'Actualizado',
             data: 'updated_at',
          },
-
       ],
       drawCallback: function (settings) {
          const tooltipTriggerList = [].slice.call(document.querySelectorAll(
