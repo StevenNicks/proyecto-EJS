@@ -2,11 +2,24 @@
 * {
    font-family: "Poppins", sans-serif;
 }
+
+/* Estilos globales para todos los th y td */
 th,
 td {
    text-align: center !important;
    white-space: nowrap;
    vertical-align: middle !important;
+}
+
+/* Estilos específicos para la columna observacion en el DataTable con id="example" */
+#example th.observacion-column,
+#example td.observacion-column {
+   text-align: center !important;
+   white-space: nowrap !important; /* Evita que el texto se divida en varias líneas */
+   overflow: hidden !important; /* Oculta el texto que excede el ancho */
+   text-overflow: ellipsis !important; /* Muestra ... cuando el texto es demasiado largo */
+   max-width: 300px !important; /* Limita el ancho de la columna (ajusta según necesites) */
+   vertical-align: top !important; /* Mantiene la alineación vertical */
 }
 
 /* Chrome, Safari, Edge, Opera */

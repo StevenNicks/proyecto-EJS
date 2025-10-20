@@ -27,6 +27,9 @@ $(document).ready(function () {
             sortDescending: ": activar para ordenar la columna de manera descendente"
          }
       },
+      order: [[0, "desc"]], // Ordenar por la primera columna (índice 0, id) de mayor a menor
+      pageLength: 100,      // Mostrar 100 registros por página
+      lengthMenu: [10, 25, 50, 100], // Opciones de número de registros por página
       ajax: {
          url: `/resultados/data/${window.location.pathname.split('/').pop()}`,
          dataSrc: function (response) {
@@ -117,16 +120,134 @@ $(document).ready(function () {
                $(td).text(data);
             }
          },
-         { data: 'altura', title: 'altura' },
-         { data: 'peso', title: 'peso' },
-         { data: 'IMC', title: 'IMC' },
-         { data: 'sistole', title: 'sistole' },
-         { data: 'diastole', title: 'diastole' },
-         { data: 'pulso', title: 'pulso' },
-         { data: 'oxigenacion', title: 'oxigenacion' },
-         { data: 'glucosa', title: 'glucosa' },
-         { data: 'temperatura', title: 'temperatura' },
-         { data: 'observacion', title: 'observacion' },
+         {
+            data: 'IMC',
+            title: 'IMC',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData);
+               let color = '', rango = '';
+
+               if (valor < 18.5) { color = '#3A9AD9'; rango = 'Bajo'; }      // Azul
+               else if (valor < 25) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor < 30) { color = '#F7E03C'; rango = 'Sobrepeso'; } // Amarillo
+               else if (valor < 35) { color = '#F7A03C'; rango = 'Obeso I'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Obeso II+'; }             // Rojo
+
+               $(td).css({ 'background-color': color, 'color': '#000', 'font-weight': 'bold', 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'sistole',
+            title: 'Sistólica',
+            createdCell: function (td, cellData) {
+               const valor = parseInt(cellData);
+               let color = '', rango = '';
+
+               if (valor < 90) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
+               else if (valor <= 120) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor <= 140) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
+               else if (valor <= 160) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'diastole',
+            title: 'Diastólica',
+            createdCell: function (td, cellData) {
+               const valor = parseInt(cellData);
+               let color = '', rango = '';
+
+               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
+               else if (valor <= 80) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor <= 90) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
+               else if (valor <= 100) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'pulso',
+            title: 'Pulso',
+            createdCell: function (td, cellData) {
+               const valor = parseInt(cellData);
+               let color = '', rango = '';
+
+               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
+               else if (valor <= 100) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor <= 120) { color = '#F7E03C'; rango = 'Elevado'; } // Amarillo
+               else if (valor <= 140) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'oxigenacion',
+            title: 'Oxigenación',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData);
+               let color = '', rango = '';
+
+               if (valor >= 95) { color = '#3AD98C'; rango = 'Normal'; }   // Verde
+               else if (valor >= 90) { color = '#F7E03C'; rango = 'Ligeramente Bajo'; } // Amarillo
+               else if (valor >= 85) { color = '#F7A03C'; rango = 'Bajo'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Muy Bajo'; }            // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'glucosa',
+            title: 'Glucosa',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData);
+               let color = '', rango = '';
+
+               if (valor < 70) { color = '#3A9AD9'; rango = 'Bajo'; }       // Azul
+               else if (valor <= 140) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor <= 180) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
+               else if (valor <= 220) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'temperatura',
+            title: 'Temperatura',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData);
+               let color = '', rango = '';
+
+               if (valor < 36) { color = '#3A9AD9'; rango = 'Bajo'; }      // Azul
+               else if (valor <= 37.5) { color = '#3AD98C'; rango = 'Normal'; } // Verde
+               else if (valor <= 38.5) { color = '#F7E03C'; rango = 'Fiebre Ligera'; } // Amarillo
+               else if (valor <= 39.5) { color = '#F7A03C'; rango = 'Fiebre Alta'; } // Naranja
+               else { color = '#F74D4D'; rango = 'Fiebre Muy Alta'; }      // Rojo
+
+               $(td).css({ 'background-color': color, 'text-align': 'center' })
+                  .html(`${valor} <br><small>${rango}</small>`);
+            }
+         },
+         {
+            data: 'observacion',
+            title: 'Observación',
+            className: 'observacion-column',
+            createdCell: function (td, cellData) {
+               $(td).on('click', function () {
+                  alert(cellData); // Muestra el texto completo en un alert
+               });
+            }
+         },
          {
             title: 'Actualizar',
             data: 'id',

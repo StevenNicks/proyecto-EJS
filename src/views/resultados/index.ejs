@@ -6,12 +6,23 @@
 
       <body>
          <div class="container-fluid container-md py-4">
+            <div class="row g-3 mb-3" id="cards">
+               <div class="col-12 col-sm-12 col-md-4 mb-3">
+                  <div class="custom-card bg-light p-3 text-center border border-2 shadow-sm bg-body-tertiary rounded">
+                     <h3 class="fw-semibold display-3 mb-2 d-flex align-items-center justify-content-center gap-2">
+                        <span id="codigoTamizaje">0</span>
+                     </h3>
+                     <p class="mt-2 mb-0">Código tamizaje</p>
+                  </div>
+               </div>
+            </div>
+
             <!-- Boton agregar resultado -->
             <% if (user && (user.rol===1 || user.rol===3)) { %>
                <div class="row g-3 mb-3">
                   <div class="col-12 col-sm-12 col-md-12">
                      <div class="custom-card bg-light p-3 text-start border border-2 rounded">
-                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" disabled
                            id="agregar-resultado">
                            <i data-lucide="user-round-plus" width="20" height="20"></i>
                            Agregar resultado
@@ -224,6 +235,16 @@
 
          <%- include('../partials/scripts') %>
             <script src="/js/resultados.js"></script>
+            <script>
+               $(document).ready(function () {
+                  // Obtener la URL actual
+                  let url = window.location.href;
+                  // Extraer el último número de la URL usando una expresión regular
+                  let number = url.match(/\/(\d+)$/)[1];
+                  // Actualizar el contenido del <span> dentro de la tarjeta
+                  $('#codigoTamizaje').text(number);
+               });
+            </script>
       </body>
 
 </html>
