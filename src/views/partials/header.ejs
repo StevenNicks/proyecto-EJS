@@ -70,6 +70,7 @@
                   window.location.href = "/auth/login";
                } else {
                   alert(data.message || "Error al cerrar sesión.");
+                  window.location.href = "/auth/login";
                }
             } catch (error) {
                console.error("Error al cerrar sesión:", error);

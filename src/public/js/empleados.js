@@ -330,7 +330,7 @@ $(document).ready(function () {
       const cedula = $form.find("#update_cedula").val(); // Se obtiene la cédula del campo del formulario
       const $submitBtn = $form.find('button[type="submit"]'); // Botón de envío
       const originalText = $submitBtn.text(); // Guarda el texto original del botón
-
+      
       if (validarFormulario(this.id)) {
          $.ajax({
             method: "PUT",

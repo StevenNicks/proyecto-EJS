@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <%- include('../partials/head') %>
    <%- include('../partials/header') %>
 
@@ -10,14 +10,14 @@
                <!-- cards -->
             </div>
 
-            <!-- Boton agregar rol -->
+            <!-- Botón agregar tamizaje -->
             <% if (user && (user.rol===1 || user.rol===3)) { %>
                <div class="row g-3 mb-3">
                   <div class="col-12 col-sm-12 col-md-12">
                      <div class="custom-card bg-light p-3 text-start border border-2 rounded">
                         <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
                            id="agregar-tamizaje">
-                           <i data-lucide="user-star" width="20" height="20"></i>
+                           <i data-lucide="clipboard-plus" width="20" height="20"></i>
                            Agregar Tamizaje
                         </button>
                      </div>
@@ -33,13 +33,14 @@
                                  <thead>
                                     <tr>
                                        <th scope="col">#</th>
+                                       <th scope="col">Fecha</th>
                                        <th scope="col">nombre</th>
-                                       <th scope="col">estado</th>
+                                       <th scope="col">Resultado</th>
+                                       <th scope="col">Acciones</th>
                                     </tr>
                                  </thead>
                                  <tbody>
-                                    <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
-
+                                    <!-- Data se genera dinámicamente con DataTables vía AJAX -->
                                  </tbody>
                               </table>
                            </div>
@@ -47,33 +48,39 @@
                      </div>
                   </div>
 
-                  <!-- Modal create -->
-                  <div class="modal fade" id="createUsuarioModal" data-bs-backdrop="static" data-bs-keyboard="false"
-                     tabindex="-1" aria-labelledby="createUsuarioModalLabel" aria-hidden="true">
+                  <!-- Modal crear tamizaje -->
+                  <div class="modal fade" id="createTamizajeModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="createTamizajeModalLabel" aria-hidden="true">
                      <div class="modal-dialog">
                         <div class="modal-content">
                            <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="createUsuarioModalLabel">Crear un usuario</h1>
-                              <button type="button" class="btn-close" id="createUsuarioModalBtnClose"></button>
+                              <h1 class="modal-title fs-5" id="createTamizajeModalLabel">Registrar nuevo tamizaje</h1>
+                              <button type="button" class="btn-close" id="createTamizajeModalBtnClose"></button>
                            </div>
                            <div class="modal-body">
-                              <form id="usuarioForm" action="/usuarios" method="post" class="row g-3 needs-validation"
+                              <form id="tamizajeForm" action="/tamizajes" method="post" class="row g-3 needs-validation"
                                  novalidate>
-                                 <div class="col-md-12">
-                                    <label for="nombre" class="form-label">Nombre del rol</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre"
-                                       placeholder="Nombre abreviado ej: Admin" required>
-                                 </div>
-                                 <div class="col-md-12">
-                                    <label for="descripcion" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control" id="descripcion" name="descripcion"
-                                       placeholder="Descripcion ej: Administrador del sistema">
-                                 </div>
-                                 <div class="my-3">
 
+                                 <!-- Nombre del tamizaje -->
+                                 <div class="col-md-12">
+                                    <label for="nombre" class="form-label">Nombre del Tamizaje</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre"
+                                       placeholder="Ej: Tamizaje Anual 2025" required>
                                  </div>
+
+                                 <!-- Estado (En proceso, Completado, Cancelado) -->
+                                 <div class="col-md-12">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select class="form-select" id="estado" name="estado" required>
+                                       <option value="1" selected>En proceso</option>
+                                       <option value="2">Completado</option>
+                                       <option value="3">Cancelado</option>
+                                    </select>
+                                 </div>
+
+                                 <div class="my-3"></div>
                                  <div class="d-grid">
-                                    <button class="btn btn-outline-primary" type="submit">Crear rol</button>
+                                    <button class="btn btn-outline-primary" type="submit">Guardar Tamizaje</button>
                                  </div>
                               </form>
                            </div>
@@ -81,38 +88,45 @@
                      </div>
                   </div>
 
-                  <!-- Modal update -->
-                  <div class="modal fade" id="updateUsuarioModal" data-bs-backdrop="static" data-bs-keyboard="false"
-                     tabindex="-1" aria-labelledby="updateUsuarioModalLabel" aria-hidden="true">
+                  <!-- Modal actualizar tamizaje -->
+                  <div class="modal fade" id="updateTamizajeModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="updateTamizajeModalLabel" aria-hidden="true">
                      <div class="modal-dialog">
                         <div class="modal-content">
                            <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="updateUsuarioModalLabel">Actualizar un usuario</h1>
-                              <button type="button" class="btn-close" id="updateUsuarioModalBtnClose"></button>
+                              <h1 class="modal-title fs-5" id="updateTamizajeModalLabel">Actualizar tamizaje</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                 aria-label="Cerrar"></button>
                            </div>
                            <div class="modal-body">
-                              <form id="updateUsuarioForm" class="row g-3 needs-validation" novalidate>
+                              <form id="updateTamizajeForm" class="row g-3 needs-validation" novalidate>
+                                 <!-- ID (solo lectura) -->
                                  <div class="col-md-12">
-                                    <label for="update_id" class="form-label">Codigo del rol</label>
-                                    <input type="number" class="form-control no-arrow" id="update_id" name="update_id"
-                                       placeholder="Codigo del rol" required readonly>
+                                    <label for="update_id" class="form-label">Código</label>
+                                    <input type="number" class="form-control" id="update_id" name="update_id" disabled readonly
+                                       required>
                                  </div>
-                                 <div class="col-md-12">
-                                    <label for="update_nombre" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" id="update_nombre" name="nombre"
-                                       placeholder="Nombre del rol" required>
-                                 </div>
-                                 <div class="col-md-12">
-                                    <label for="update_descripcion" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control" id="update_descripcion" name="descripcion"
-                                       placeholder="Descripcion ej: Administrador del sistema">
-                                 </div>
-                                 <div class="my-3">
 
+                                 <!-- Nombre -->
+                                 <div class="col-md-12">
+                                    <label for="update_nombre" class="form-label">Nombre del tamizaje</label>
+                                    <input type="text" class="form-control" id="update_nombre" name="update_nombre"
+                                       placeholder="Ej: Tamizaje Anual 2025" required>
                                  </div>
+
+                                 <!-- Estado -->
+                                 <div class="col-md-12">
+                                    <label for="update_estado" class="form-label">Estado</label>
+                                    <select class="form-select" id="update_estado" name="update_estado" required>
+                                       <option value="1">En proceso</option>
+                                       <option value="2">Completado</option>
+                                       <option value="3">Cancelado</option>
+                                    </select>
+                                 </div>
+
+                                 <div class="my-3"></div>
                                  <div class="d-grid">
-                                    <button class="btn btn-outline-primary" type="submit">Actualizar
-                                       funcionario</button>
+                                    <button class="btn btn-outline-primary" type="submit">Actualizar tamizaje</button>
                                  </div>
                               </form>
                            </div>
@@ -120,8 +134,6 @@
                      </div>
                   </div>
          </div>
-
-
          <%- include('../partials/scripts') %>
             <script src="/js/tamizajes.js"></script>
       </body>
