@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../partials/head') %>
+   <%- include('../partials/header') %>
+
+      <body>
+         <div class="container-fluid container-md py-4">
+            <!-- Boton agregar resultado -->
+            <% if (user && (user.rol===1 || user.rol===3)) { %>
+               <div class="row g-3 mb-3">
+                  <div class="col-12 col-sm-12 col-md-12">
+                     <div class="custom-card bg-light p-3 text-start border border-2 rounded">
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"
+                           id="agregar-resultado">
+                           <i data-lucide="user-round-plus" width="20" height="20"></i>
+                           Agregar resultado
+                        </button>
+                     </div>
+                  </div>
+               </div>
+               <% } %>
+
+                  <!-- tabla de resultados -->
+                  <div class="row g-3 mb-3">
+                     <div class="col-12">
+                        <div class="custom-card bg-light p-3 border border-2 rounded">
+                           <div class="table-responsive">
+                              <table id="example" class="table table-bordered table-striped-columns table-hover">
+                                 <thead>
+                                    <tr>
+                                       <th scope="col">#</th>
+                                       <!-- <th scope="col">tamizaje_id</th> -->
+                                       <th scope="col">empleado_cedula</th>
+                                       <th scope="col">altura</th>
+                                       <th scope="col">peso</th>
+                                       <th scope="col">IMC</th>
+                                       <th scope="col">sistole</th>
+                                       <th scope="col">diastole</th>
+                                       <th scope="col">pulso</th>
+                                       <th scope="col">oxigenacion</th>
+                                       <th scope="col">glucosa</th>
+                                       <th scope="col">temperatura</th>
+                                       <th scope="col">observacion</th>
+                                       <!-- <th scope="col">estado</th> -->
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <!-- data se genera desde datatable por medio de AJAX, No son datos estaticos en HTML -->
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Modal create -->
+                  <div class="modal fade" id="createResultadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="createResultadoModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="createResultadoModalLabel">Crear un resultado</h1>
+                              <button type="button" class="btn-close" id="createResultadoModalBtnClose"></button>
+                           </div>
+                           <div class="modal-body">
+                              <form id="resultadoForm" action="/resultados" method="post"
+                                 class="row g-3 needs-validation" novalidate>
+                                 <div class="col-md-12">
+                                    <label for="tamizaje_id" class="form-label">Tamizaje ID</label>
+                                    <input type="number" class="form-control no-arrow" id="tamizaje_id"
+                                       name="tamizaje_id" placeholder="Tamizaje ID" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="empleado_cedula" class="form-label">Cedula empleado</label>
+                                    <input type="text" class="form-control" id="empleado_cedula" name="empleado_cedula"
+                                       placeholder="Cedula empleado" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="altura" class="form-label">Altura</label>
+                                    <input type="number" step="0.01" class="form-control" id="altura" name="altura"
+                                       placeholder="Altura" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="peso" class="form-label">Peso</label>
+                                    <input type="number" step="0.01" class="form-control" id="peso" name="peso"
+                                       placeholder="Peso" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="IMC" class="form-label">IMC</label>
+                                    <input type="number" step="0.01" class="form-control" id="IMC" name="IMC"
+                                       placeholder="IMC" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="sistole" class="form-label">Sistole</label>
+                                    <input type="number" class="form-control" id="sistole" name="sistole"
+                                       placeholder="Sistole" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="diastole" class="form-label">Diastole</label>
+                                    <input type="number" class="form-control" id="diastole" name="diastole"
+                                       placeholder="Diastole" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="pulso" class="form-label">Pulso</label>
+                                    <input type="number" class="form-control" id="pulso" name="pulso"
+                                       placeholder="Pulso" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="oxigenacion" class="form-label">Oxigenacion</label>
+                                    <input type="number" step="0.01" class="form-control" id="oxigenacion"
+                                       name="oxigenacion" placeholder="Oxigenacion" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="glucosa" class="form-label">Glucosa</label>
+                                    <input type="number" step="0.01" class="form-control" id="glucosa" name="glucosa"
+                                       placeholder="Glucosa" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="temperatura" class="form-label">Temperatura</label>
+                                    <input type="number" step="0.01" class="form-control" id="temperatura"
+                                       name="temperatura" placeholder="Temperatura" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="observacion" class="form-label">Observacion</label>
+                                    <textarea class="form-control" id="observacion" name="observacion"
+                                       placeholder="Observacion"></textarea>
+                                 </div>
+                                 <div class="my-3">
+
+                                 </div>
+                                 <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit">Agregar resultado</button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Modal update -->
+                  <div class="modal fade" id="updateResultadoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                     tabindex="-1" aria-labelledby="updateResultadoModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <h1 class="modal-title fs-5" id="updateResultadoModalLabel">Actualizar un resultado</h1>
+                              <button type="button" class="btn-close" id="updateResultadoModalBtnClose"></button>
+                           </div>
+                           <div class="modal-body">
+                              <form id="updateResultadoForm" class="row g-3 needs-validation" novalidate>
+                                 <div class="col-md-12">
+                                    <label for="update_tamizaje_id" class="form-label">Tamizaje ID</label>
+                                    <input type="number" class="form-control no-arrow" id="update_tamizaje_id"
+                                       name="update_tamizaje_id" placeholder="Tamizaje ID" required readonly>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_empleado_cedula" class="form-label">Cedula empleado</label>
+                                    <input type="text" class="form-control" id="update_empleado_cedula"
+                                       name="empleado_cedula" placeholder="Cedula empleado" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_altura" class="form-label">Altura</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_altura"
+                                       name="altura" placeholder="Altura" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_peso" class="form-label">Peso</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_peso" name="peso"
+                                       placeholder="Peso" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_IMC" class="form-label">IMC</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_IMC" name="IMC"
+                                       placeholder="IMC" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_sistole" class="form-label">Sistole</label>
+                                    <input type="number" class="form-control" id="update_sistole" name="sistole"
+                                       placeholder="Sistole" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_diastole" class="form-label">Diastole</label>
+                                    <input type="number" class="form-control" id="update_diastole" name="diastole"
+                                       placeholder="Diastole" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_pulso" class="form-label">Pulso</label>
+                                    <input type="number" class="form-control" id="update_pulso" name="pulso"
+                                       placeholder="Pulso" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_oxigenacion" class="form-label">Oxigenacion</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_oxigenacion"
+                                       name="oxigenacion" placeholder="Oxigenacion" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_glucosa" class="form-label">Glucosa</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_glucosa"
+                                       name="glucosa" placeholder="Glucosa" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_temperatura" class="form-label">Temperatura</label>
+                                    <input type="number" step="0.01" class="form-control" id="update_temperatura"
+                                       name="temperatura" placeholder="Temperatura" required>
+                                 </div>
+                                 <div class="col-md-12">
+                                    <label for="update_observacion" class="form-label">Observacion</label>
+                                    <textarea class="form-control" id="update_observacion" name="observacion"
+                                       placeholder="Observacion"></textarea>
+                                 </div>
+                                 <div class="my-3">
+
+                                 </div>
+                                 <div class="d-grid">
+                                    <button class="btn btn-outline-primary" type="submit">Actualizar resultado</button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+         </div>
+
+         <%- include('../partials/scripts') %>
+            <script src="/js/resultados.js"></script>
+      </body>
+
+</html>

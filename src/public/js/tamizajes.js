@@ -91,6 +91,21 @@ $(document).ready(function () {
                return data;
             },
          },
+         {
+            title: "visualizar",
+            data: "id",
+            render: function (data, type) {
+               if (type === "display") {
+                  return `
+                     <button type="button" class="btn btn-outline-success w-100" 
+                        onclick="window.location.href='resultados/tamizaje/${data}'">
+                        <i data-lucide="eye" width="20" height="20" stroke-width="2"></i>
+                     </button>
+                  `;
+               }
+               return data;
+            },
+         },
          { data: "created_at", title: "Creado" },
          { data: "updated_at", title: "Actualizado" },
       ],
