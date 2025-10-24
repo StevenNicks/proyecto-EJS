@@ -2,6 +2,122 @@ $(document).ready(function () {
    // rol de la sesion
    let userRole = null;
 
+   // ==================== CÓDIGO DEL BOTÓN AGREGAR RESULTADO ====================
+   
+   // ✅ BOTÓN "AGREGAR RESULTADO"
+   $('#agregar-resultado').on('click', function() {
+      // Obtener el ID del tamizaje desde la URL
+      const tamizajeId = window.location.pathname.split('/').pop();
+      
+      // Llenar automáticamente el campo tamizaje_id en el modal
+      $('#tamizaje_id').val(tamizajeId);
+      
+      // Mostrar el modal de crear resultado
+      const modal = new bootstrap.Modal(document.getElementById('createResultadoModal'));
+      modal.show();
+   });
+
+   // Cerrar modal al hacer clic en la X
+   $('#createResultadoModalBtnClose').on('click', function() {
+      const modal = bootstrap.Modal.getInstance(document.getElementById('createResultadoModal'));
+      modal.hide();
+   });
+
+   // 🔹 ENVÍO DEL FORMULARIO DE CREAR RESULTADO
+   $('#resultadoForm').on('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = {
+         tamizaje_id: $('#tamizaje_id').val(),
+         empleado_cedula: $('#empleado_cedula').val(),
+         altura: $('#altura').val(),
+         peso: $('#peso').val(),
+         IMC: $('#IMC').val(),
+         sistole: $('#sistole').val(),
+         diastole: $('#diastole').val(),
+         pulso: $('#pulso').val(),
+         oxigenacion: $('#oxigenacion').val(),
+         glucosa: $('#glucosa').val(),
+         temperatura: $('#temperatura').val(),
+         observacion: $('#observacion').val()
+      };
+
+      // Validar campos requeridos
+      if (!formData.empleado_cedula || !formData.altura || !formData.peso) {
+         Swal.fire({
+            icon: 'warning',
+            title: 'Campos requeridos',
+            text: 'Por favor complete todos los campos obligatorios',
+            confirmButtonColor: '#ffc107'
+         });
+         return;
+      }
+
+      // Enviar datos al servidor
+      $.ajax({
+         url: '/resultados',
+         method: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify(formData),
+         success: function(response) {
+            if (response.success) {
+               // Cerrar modal
+               const modal = bootstrap.Modal.getInstance(document.getElementById('createResultadoModal'));
+               modal.hide();
+               
+               // Recargar DataTable
+               tableResultados.ajax.reload();
+               
+               // Limpiar formulario
+               $('#resultadoForm')[0].reset();
+               
+               // ✅ ALERT BONITO DE ÉXITO
+               Swal.fire({
+                  icon: 'success',
+                  title: '¡Éxito!',
+                  text: 'Resultado agregado exitosamente',
+                  confirmButtonColor: '#3085d6',
+                  confirmButtonText: 'Aceptar'
+               });
+            } else {
+               // ✅ ALERT BONITO DE ERROR
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message,
+                  confirmButtonColor: '#d33',
+                  confirmButtonText: 'Aceptar'
+               });
+            }
+         },
+         error: function(xhr) {
+            const errorMsg = xhr.responseJSON?.message || 'Error al agregar resultado';
+            
+            // ✅ DETECTAR SI ES ERROR DE CÉDULA NO ENCONTRADA
+            if (errorMsg.includes('cedula') || errorMsg.includes('cédula') || errorMsg.includes('empleado')) {
+               Swal.fire({
+                  icon: 'warning',
+                  title: 'Cédula no encontrada',
+                  text: 'La cédula ingresada no está registrada en el sistema. Verifique el número e intente nuevamente.',
+                  confirmButtonColor: '#ffc107',
+                  confirmButtonText: 'Aceptar'
+               });
+            } else {
+               // ✅ ALERT BONITO PARA OTROS ERRORES
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: errorMsg,
+                  confirmButtonColor: '#d33',
+                  confirmButtonText: 'Aceptar'
+               });
+            }
+         }
+      });
+   });
+
+   // ==================== FIN CÓDIGO BOTÓN AGREGAR ====================
+
    // 🔹 Inicialización de DataTable (Resultados)
    let tableResultados = $("#example").DataTable({
       language: {
@@ -27,35 +143,28 @@ $(document).ready(function () {
             sortDescending: ": activar para ordenar la columna de manera descendente"
          }
       },
-      order: [[0, "desc"]], // Ordenar por la primera columna (índice 0, id) de mayor a menor
-      pageLength: 100,      // Mostrar 100 registros por página
-      lengthMenu: [10, 25, 50, 100], // Opciones de número de registros por página
+      order: [[0, "desc"]],
+      pageLength: 100,
+      lengthMenu: [10, 25, 50, 100],
       ajax: {
-         url: `/resultados/data/${window.location.pathname.split('/').pop()}`,
+         url: `/resultados/data/tamizaje/${window.location.pathname.split('/').pop()}`,
          dataSrc: function (response) {
             console.log(response);
-
             userRole = response.user?.rol;
-            return response.data || []; // siempre devuelve un array, aunque esté vacío
+            return response.data || [];
          },
          error: function (xhr) {
-            // Muestra mensaje del backend si existe
             const msg = xhr.responseJSON?.message || 'No hay resultados para este tamizaje.';
             console.warn(msg);
-
-            // Vacía la tabla para que no pinte nada
             tableResultados.clear().draw();
          }
       },
       columns: [
          { data: 'id', createdCell: (td) => $(td).addClass('bg-success text-white') },
-         // { data: 'tamizaje_id' },
          {
             data: 'empleado_cedula',
             createdCell: function (td, cellData, rowData, row, col) {
                const cedula = cellData ? cellData.toString() : "VACIO";
-
-               // valida que la cedula no posea menos de 7 caracteres
                const isValida = cedula.length >= 7;
 
                if (isValida) {
@@ -69,11 +178,9 @@ $(document).ready(function () {
                            ${cedula}
                         </span>
                   `;
-
                   $(td).addClass('text-center user-select-all align-middle fw-semibold').html(content);
                   $(td).find('span').tooltip();
                } else {
-                  // Mostrar tooltip de cédula errónea sin permitir copiar
                   $(td)
                      .addClass('text-center align-middle bg-warning')
                      .attr({
@@ -98,7 +205,7 @@ $(document).ready(function () {
             title: 'segundo_nombre',
             data: 'segundo_nombre',
             createdCell: function (td, cellData, rowData, row, col) {
-               let value = (cellData || '').trim(); // Maneja null y undefined
+               let value = (cellData || '').trim();
                let data = value ? value.toUpperCase() : 'N/A';
                $(td).text(data);
             }
@@ -115,7 +222,7 @@ $(document).ready(function () {
             title: 'segundo_apellido',
             data: 'segundo_apellido',
             createdCell: function (td, cellData, rowData, row, col) {
-               let value = (cellData || '').trim(); // Maneja null y undefined
+               let value = (cellData || '').trim();
                let data = value ? value.toUpperCase() : 'N/A';
                $(td).text(data);
             }
@@ -127,11 +234,11 @@ $(document).ready(function () {
                const valor = parseFloat(cellData);
                let color = '', rango = '';
 
-               if (valor < 18.5) { color = '#3A9AD9'; rango = 'Bajo'; }      // Azul
-               else if (valor < 25) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor < 30) { color = '#F7E03C'; rango = 'Sobrepeso'; } // Amarillo
-               else if (valor < 35) { color = '#F7A03C'; rango = 'Obeso I'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Obeso II+'; }             // Rojo
+               if (valor < 18.5) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor < 25) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor < 30) { color = '#F7E03C'; rango = 'Sobrepeso'; }
+               else if (valor < 35) { color = '#F7A03C'; rango = 'Obeso I'; }
+               else { color = '#F74D4D'; rango = 'Obeso II+'; }
 
                $(td).css({ 'background-color': color, 'color': '#000', 'font-weight': 'bold', 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -144,11 +251,11 @@ $(document).ready(function () {
                const valor = parseInt(cellData);
                let color = '', rango = '';
 
-               if (valor < 90) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
-               else if (valor <= 120) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor <= 140) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
-               else if (valor <= 160) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+               if (valor < 90) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor <= 120) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor <= 140) { color = '#F7E03C'; rango = 'Ligeramente Alto'; }
+               else if (valor <= 160) { color = '#F7A03C'; rango = 'Alto'; }
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -161,11 +268,11 @@ $(document).ready(function () {
                const valor = parseInt(cellData);
                let color = '', rango = '';
 
-               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
-               else if (valor <= 80) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor <= 90) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
-               else if (valor <= 100) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor <= 80) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor <= 90) { color = '#F7E03C'; rango = 'Ligeramente Alto'; }
+               else if (valor <= 100) { color = '#F7A03C'; rango = 'Alto'; }
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -178,11 +285,11 @@ $(document).ready(function () {
                const valor = parseInt(cellData);
                let color = '', rango = '';
 
-               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }        // Azul
-               else if (valor <= 100) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor <= 120) { color = '#F7E03C'; rango = 'Elevado'; } // Amarillo
-               else if (valor <= 140) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+               if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor <= 100) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor <= 120) { color = '#F7E03C'; rango = 'Elevado'; }
+               else if (valor <= 140) { color = '#F7A03C'; rango = 'Alto'; }
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -195,10 +302,10 @@ $(document).ready(function () {
                const valor = parseFloat(cellData);
                let color = '', rango = '';
 
-               if (valor >= 95) { color = '#3AD98C'; rango = 'Normal'; }   // Verde
-               else if (valor >= 90) { color = '#F7E03C'; rango = 'Ligeramente Bajo'; } // Amarillo
-               else if (valor >= 85) { color = '#F7A03C'; rango = 'Bajo'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Muy Bajo'; }            // Rojo
+               if (valor >= 95) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor >= 90) { color = '#F7E03C'; rango = 'Ligeramente Bajo'; }
+               else if (valor >= 85) { color = '#F7A03C'; rango = 'Bajo'; }
+               else { color = '#F74D4D'; rango = 'Muy Bajo'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -211,11 +318,11 @@ $(document).ready(function () {
                const valor = parseFloat(cellData);
                let color = '', rango = '';
 
-               if (valor < 70) { color = '#3A9AD9'; rango = 'Bajo'; }       // Azul
-               else if (valor <= 140) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor <= 180) { color = '#F7E03C'; rango = 'Ligeramente Alto'; } // Amarillo
-               else if (valor <= 220) { color = '#F7A03C'; rango = 'Alto'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Muy Alto'; }               // Rojo
+               if (valor < 70) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor <= 140) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor <= 180) { color = '#F7E03C'; rango = 'Ligeramente Alto'; }
+               else if (valor <= 220) { color = '#F7A03C'; rango = 'Alto'; }
+               else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -228,11 +335,11 @@ $(document).ready(function () {
                const valor = parseFloat(cellData);
                let color = '', rango = '';
 
-               if (valor < 36) { color = '#3A9AD9'; rango = 'Bajo'; }      // Azul
-               else if (valor <= 37.5) { color = '#3AD98C'; rango = 'Normal'; } // Verde
-               else if (valor <= 38.5) { color = '#F7E03C'; rango = 'Fiebre Ligera'; } // Amarillo
-               else if (valor <= 39.5) { color = '#F7A03C'; rango = 'Fiebre Alta'; } // Naranja
-               else { color = '#F74D4D'; rango = 'Fiebre Muy Alta'; }      // Rojo
+               if (valor < 36) { color = '#3A9AD9'; rango = 'Bajo'; }
+               else if (valor <= 37.5) { color = '#3AD98C'; rango = 'Normal'; }
+               else if (valor <= 38.5) { color = '#F7E03C'; rango = 'Fiebre Ligera'; }
+               else if (valor <= 39.5) { color = '#F7A03C'; rango = 'Fiebre Alta'; }
+               else { color = '#F74D4D'; rango = 'Fiebre Muy Alta'; }
 
                $(td).css({ 'background-color': color, 'text-align': 'center' })
                   .html(`${valor} <br><small>${rango}</small>`);
@@ -244,7 +351,7 @@ $(document).ready(function () {
             className: 'observacion-column',
             createdCell: function (td, cellData) {
                $(td).on('click', function () {
-                  alert(cellData); // Muestra el texto completo en un alert
+                  alert(cellData);
                });
             }
          },
@@ -259,7 +366,7 @@ $(document).ready(function () {
                      </button>
                   `;
                }
-               return data;   // ordenación y búsqueda
+               return data;
             }
          },
          {
@@ -273,10 +380,9 @@ $(document).ready(function () {
                      </button>
                   `;
                }
-               return data;   // ordenación y búsqueda
+               return data;
             }
          },
-         // { data: 'estado', render: (data) => data ? 'Activo' : 'Inactivo' },
          { title: 'Creado', data: 'created_at' },
          { title: 'Actualizado', data: 'updated_at' }
       ],
@@ -293,7 +399,184 @@ $(document).ready(function () {
 
    // 🔹 Redibujar íconos al cambiar de página en la tabla
    tableResultados.on('draw', function () {
-      lucide.createIcons(); // vuelve a renderizar los íconos Lucide
+      lucide.createIcons();
    });
 
+   // ==================== CÓDIGO BOTONES ACTUALIZAR Y ELIMINAR ====================
+
+   // ✅ FUNCIONALIDAD PARA BOTÓN ACTUALIZAR
+   $(document).on('click', '.btn-update', function() {
+      const resultadoId = $(this).data('id');
+      console.log('Actualizando resultado ID:', resultadoId);
+      
+      $.ajax({
+         url: `/resultados/${resultadoId}`,
+         method: 'GET',
+         success: function(response) {
+            if (response.success) {
+               const resultado = response.data;
+               console.log('Datos del resultado:', resultado);
+               
+               // Llenar el formulario de actualizar
+               $('#update_id').val(resultado.id);
+               $('#update_tamizaje_id').val(resultado.tamizaje_id);
+               $('#update_empleado_cedula').val(resultado.empleado_cedula);
+               $('#update_altura').val(resultado.altura);
+               $('#update_peso').val(resultado.peso);
+               $('#update_IMC').val(resultado.IMC);
+               $('#update_sistole').val(resultado.sistole);
+               $('#update_diastole').val(resultado.diastole);
+               $('#update_pulso').val(resultado.pulso);
+               $('#update_oxigenacion').val(resultado.oxigenacion);
+               $('#update_glucosa').val(resultado.glucosa);
+               $('#update_temperatura').val(resultado.temperatura);
+               $('#update_observacion').val(resultado.observacion);
+               
+               // Mostrar el modal de actualizar
+               const modal = new bootstrap.Modal(document.getElementById('updateResultadoModal'));
+               modal.show();
+            } else {
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message || 'No se pudieron cargar los datos',
+                  confirmButtonColor: '#d33'
+               });
+            }
+         },
+         error: function(xhr) {
+            console.error('Error al cargar datos:', xhr);
+            Swal.fire({
+               icon: 'error',
+               title: 'Error',
+               text: 'No se pudieron cargar los datos del resultado',
+               confirmButtonColor: '#d33'
+            });
+         }
+      });
+   });
+
+   // ✅ FUNCIONALIDAD PARA BOTÓN ELIMINAR
+   $(document).on('click', '.btn-delete', function() {
+      const resultadoId = $(this).data('id');
+      console.log('Eliminando resultado ID:', resultadoId);
+      
+      Swal.fire({
+         title: '¿Estás seguro?',
+         text: "¡No podrás revertir esto!",
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonColor: '#d33',
+         cancelButtonColor: '#3085d6',
+         confirmButtonText: 'Sí, eliminar',
+         cancelButtonText: 'Cancelar'
+      }).then((result) => {
+         if (result.isConfirmed) {
+            $.ajax({
+               url: `/resultados/${resultadoId}`,
+               method: 'DELETE',
+               success: function(response) {
+                  if (response.success) {
+                     Swal.fire({
+                        icon: 'success',
+                        title: '¡Eliminado!',
+                        text: response.message,
+                        confirmButtonColor: '#3085d6'
+                     });
+                     tableResultados.ajax.reload();
+                  } else {
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                        confirmButtonColor: '#d33'
+                     });
+                  }
+               },
+               error: function(xhr) {
+                  console.error('Error al eliminar:', xhr);
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Error',
+                     text: 'Error al eliminar el resultado',
+                     confirmButtonColor: '#d33'
+                  });
+               }
+            });
+         }
+      });
+   });
+
+   // ✅ ENVÍO DEL FORMULARIO DE ACTUALIZAR
+   $('#updateResultadoForm').on('submit', function(e) {
+      e.preventDefault();
+      
+      const resultadoId = $('#update_id').val();
+      console.log('Actualizando resultado ID:', resultadoId);
+      
+      const formData = {
+         tamizaje_id: $('#update_tamizaje_id').val(),
+         empleado_cedula: $('#update_empleado_cedula').val(),
+         altura: $('#update_altura').val(),
+         peso: $('#update_peso').val(),
+         IMC: $('#update_IMC').val(),
+         sistole: $('#update_sistole').val(),
+         diastole: $('#update_diastole').val(),
+         pulso: $('#update_pulso').val(),
+         oxigenacion: $('#update_oxigenacion').val(),
+         glucosa: $('#update_glucosa').val(),
+         temperatura: $('#update_temperatura').val(),
+         observacion: $('#update_observacion').val()
+      };
+
+      // Validar campos requeridos
+      if (!formData.empleado_cedula || !formData.altura || !formData.peso) {
+         Swal.fire({
+            icon: 'warning',
+            title: 'Campos requeridos',
+            text: 'Por favor complete todos los campos obligatorios',
+            confirmButtonColor: '#ffc107'
+         });
+         return;
+      }
+
+      $.ajax({
+         url: `/resultados/${resultadoId}`,
+         method: 'PUT',
+         contentType: 'application/json',
+         data: JSON.stringify(formData),
+         success: function(response) {
+            if (response.success) {
+               const modal = bootstrap.Modal.getInstance(document.getElementById('updateResultadoModal'));
+               modal.hide();
+               tableResultados.ajax.reload();
+               Swal.fire({
+                  icon: 'success',
+                  title: '¡Actualizado!',
+                  text: response.message,
+                  confirmButtonColor: '#3085d6'
+               });
+            } else {
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message,
+                  confirmButtonColor: '#d33'
+               });
+            }
+         },
+         error: function(xhr) {
+            console.error('Error al actualizar:', xhr);
+            const errorMsg = xhr.responseJSON?.message || 'Error al actualizar el resultado';
+            Swal.fire({
+               icon: 'error',
+               title: 'Error',
+               text: errorMsg,
+               confirmButtonColor: '#d33'
+            });
+         }
+      });
+   });
+
+   // ==================== FIN CÓDIGO BOTONES ACTUALIZAR Y ELIMINAR ====================
 });

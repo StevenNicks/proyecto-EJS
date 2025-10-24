@@ -22,7 +22,7 @@
                <div class="row g-3 mb-3">
                   <div class="col-12 col-sm-12 col-md-12">
                      <div class="custom-card bg-light p-3 text-start border border-2 rounded">
-                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" disabled
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" 
                            id="agregar-resultado">
                            <i data-lucide="user-round-plus" width="20" height="20"></i>
                            Agregar resultado
@@ -160,6 +160,9 @@
                            </div>
                            <div class="modal-body">
                               <form id="updateResultadoForm" class="row g-3 needs-validation" novalidate>
+                                 <!-- ✅ CAMPO OCULTO AGREGADO PARA EL ID DEL RESULTADO -->
+                                 <input type="hidden" id="update_id" name="update_id">
+                                 
                                  <div class="col-md-12">
                                     <label for="update_tamizaje_id" class="form-label">Tamizaje ID</label>
                                     <input type="number" class="form-control no-arrow" id="update_tamizaje_id"

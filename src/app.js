@@ -43,8 +43,8 @@ app.get(['/', '/auth'], (req, res) => res.redirect('/auth/login'));
 
 // Rutas
 app.use('/auth', authRoutes);
-app.use('/tamizajes', tamizajeRoutes);
 app.use('/resultados', resultadoRoutes);
+app.use('/tamizajes', tamizajeRoutes);
 app.use('/empleados', empleadoRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/roles', rolRoutes);
