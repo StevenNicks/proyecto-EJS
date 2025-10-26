@@ -2,7 +2,6 @@ Listado de rutas de carpetas para el volumen Nuevo vol
 El número de serie del volumen es 60BC-010F
 D:.
 |   .env
-|   .gitignore
 |   estructura.txt
 |   index.js
 |   package-lock.json
@@ -25,15 +24,6 @@ D:.
 |   |       jake
 |   |       jake.cmd
 |   |       jake.ps1
-|   |       node-gyp-build
-|   |       node-gyp-build-optional
-|   |       node-gyp-build-optional.cmd
-|   |       node-gyp-build-optional.ps1
-|   |       node-gyp-build-test
-|   |       node-gyp-build-test.cmd
-|   |       node-gyp-build-test.ps1
-|   |       node-gyp-build.cmd
-|   |       node-gyp-build.ps1
 |   |       nodemon
 |   |       nodemon.cmd
 |   |       nodemon.ps1
@@ -165,7 +155,6 @@ D:.
 |   |   |   whilst.js
 |   |   |   wrapSync.js
 |   |   |   
-|   |   +---dist
 |   |   |       async.js
 |   |   |       async.min.js
 |   |   |       async.mjs
@@ -223,7 +212,6 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   \---.github
 |   |           FUNDING.yml
 |   |           
 |   +---basic-auth
@@ -245,7 +233,6 @@ D:.
 |   |   |   .editorconfig
 |   |   |   bcrypt.js
 |   |   |   binding.gyp
-|   |   |   build-all.sh
 |   |   |   CHANGELOG.md
 |   |   |   Dockerfile
 |   |   |   Dockerfile-alpine
@@ -257,16 +244,13 @@ D:.
 |   |   |   README.md
 |   |   |   SECURITY.md
 |   |   |   
-|   |   +---.github
 |   |   |   \---workflows
-|   |   |           build-pack-publish.yml
 |   |   |           ci.yaml
 |   |   |           
 |   |   +---examples
 |   |   |       async_compare.js
 |   |   |       forever_gen_salt.js
 |   |   |       
-|   |   +---prebuilds
 |   |   |   +---darwin-arm64
 |   |   |   |       bcrypt.node
 |   |   |   |       
@@ -347,7 +331,6 @@ D:.
 |   |       |   |   package.json
 |   |       |   |   README.md
 |   |       |   |   
-|   |       |   +---.github
 |   |       |   |       dependabot.yml
 |   |       |   |       
 |   |       |   +---.idea
@@ -506,7 +489,6 @@ D:.
 |   |   |   reflectApply.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -523,7 +505,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -667,7 +648,6 @@ D:.
 |   |   |   set.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -719,7 +699,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -747,7 +726,6 @@ D:.
 |   |   |   uri.d.ts
 |   |   |   uri.js
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -769,7 +747,6 @@ D:.
 |   |   |   ToObject.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -937,7 +914,6 @@ D:.
 |   |       |   |   package.json
 |   |       |   |   README.md
 |   |       |   |   
-|   |       |   \---.github
 |   |       |           FUNDING.yml
 |   |       |           
 |   |       \---minimatch
@@ -972,7 +948,6 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       SECURITY.md
 |   |   |       
@@ -998,7 +973,6 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -1019,7 +993,6 @@ D:.
 |   |   |   Reflect.getPrototypeOf.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -1044,7 +1017,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -1063,7 +1035,6 @@ D:.
 |   |   |   shams.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -1085,7 +1056,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   \---.github
 |   |           FUNDING.yml
 |   |           
 |   +---http-errors
@@ -1414,7 +1384,6 @@ D:.
 |   |   |   sign.js
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   +---constants
@@ -1649,12 +1618,9 @@ D:.
 |   |           conversion.js
 |   |           README.md
 |   |           
-|   +---node-gyp-build
 |   |       bin.js
-|   |       build-test.js
 |   |       index.js
 |   |       LICENSE
-|   |       node-gyp-build.js
 |   |       optional.js
 |   |       package.json
 |   |       README.md
@@ -1771,7 +1737,6 @@ D:.
 |   |   |   test-core-js.js
 |   |   |   util.inspect.js
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   +---example
@@ -1835,7 +1800,6 @@ D:.
 |   |   |   package.json
 |   |   |   Readme.md
 |   |   |   
-|   |   \---dist
 |   |           index.d.ts
 |   |           index.js
 |   |           index.js.map
@@ -1932,10 +1896,8 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
-|   |   +---dist
 |   |   |       qs.js
 |   |   |       
 |   |   +---lib
@@ -2037,7 +1999,6 @@ D:.
 |   |   |       clean.js
 |   |   |       cmp.js
 |   |   |       coerce.js
-|   |   |       compare-build.js
 |   |   |       compare-loose.js
 |   |   |       compare.js
 |   |   |       diff.js
@@ -2119,7 +2080,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -2138,7 +2098,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -2156,7 +2115,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -2174,7 +2132,6 @@ D:.
 |   |   |   README.md
 |   |   |   tsconfig.json
 |   |   |   
-|   |   +---.github
 |   |   |       FUNDING.yml
 |   |   |       
 |   |   \---test
@@ -2185,7 +2142,6 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   +---build
 |   |   |       index.d.ts
 |   |   |       index.js
 |   |   |       
@@ -2273,7 +2229,6 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
-|   |   +---.github
 |   |   |   \---workflows
 |   |   |           release.yml
 |   |   |           
@@ -2340,6 +2295,7 @@ D:.
     |   |       Vaccine development-bro.png
     |   |       
     |   +---js
+    |   |       empleado.js
     |   |       empleados.js
     |   |       main.js
     |   |       resultados.js
@@ -2446,6 +2402,7 @@ D:.
         |       index.ejs
         |       
         +---tamizajes
+        |       empleado.ejs
         |       index.ejs
         |       
         \---usuarios

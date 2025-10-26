@@ -1,13 +1,9 @@
 import EmpleadoModel from '../models/empleadoModel.js'
+import ResultadosModel from '../models/resultadosModel.js';
 
 /**
  * Renderiza la vista principal de empleados.
  * @route GET /empleados
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Renderiza la vista 'empleados/index' con el título y datos del usuario.
  */
 export const renderEmpleados = async (req, res, next) => {
    try {
@@ -23,11 +19,6 @@ export const renderEmpleados = async (req, res, next) => {
 /**
  * Obtiene todos los registros de empleados desde la base de datos.
  * @route GET /empleados/data
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Devuelve una respuesta JSON con la lista de empleados o un mensaje de error.
  */
 export const getAllEmpleados = async (req, res, next) => {
    try {
@@ -46,20 +37,12 @@ export const getAllEmpleados = async (req, res, next) => {
 /**
  * Obtiene un empleado según su número de cédula.
  * @route GET /empleados/:cedula
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Devuelve una respuesta JSON con los datos del empleado.
  */
 export const getEmpleadoByCedula = async (req, res, next) => {
-   const { cedula } = req.params; // Extrae la cédula desde los parámetros de la ruta
+   const { cedula } = req.params;
 
    try {
-      // Consulta los datos del empleado en el modelo
       const empleado = await EmpleadoModel.getEmpleadoByCedula(cedula);
-
-      // Devuelve la respuesta exitosa con los datos del empleado
       res.status(200).json({ success: true, data: empleado });
    } catch (error) {
       next(error);
@@ -69,33 +52,24 @@ export const getEmpleadoByCedula = async (req, res, next) => {
 /**
  * Crea un nuevo empleado en la base de datos.
  * @route POST /empleados
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Devuelve una respuesta JSON con el id del nuevo empleado o un mensaje de error.
  */
 export const createEmpleado = async (req, res, next) => {
    let { cedula, primer_nombre, primer_apellido, segundo_nombre, segundo_apellido } = req.body;
 
-   // Valida campos obligatorios
    if (!cedula || !primer_nombre || !primer_apellido) {
       return res.status(400).json({ success: false, message: "Todos los campos son obligatorios" });
    }
 
-   // Si el dato existe quita los espacios sino dato = NULL
    segundo_nombre = segundo_nombre?.trim() || null;
    segundo_apellido = segundo_apellido?.trim() || null;
 
    try {
-      // Verifica si la cédula ya existe en la base de datos
       const empleado = await EmpleadoModel.getEmpleadoByCedula(cedula);
 
       if (empleado) {
          return res.status(409).json({ success: false, message: "La cedula ya está en registrada" });
       }
 
-      // Inserta el nuevo empleado
       const { userId } = await EmpleadoModel.createEmpleado({
          cedula: cedula.trim(),
          primer_nombre: primer_nombre.trim().toUpperCase(),
@@ -113,18 +87,12 @@ export const createEmpleado = async (req, res, next) => {
 /**
  * Actualiza los datos de un empleado existente según su cédula.
  * @route PUT /empleados/:cedula
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Devuelve una respuesta JSON con el resultado de la actualización.
  */
 export const updateEmpleadoByCedula = async (req, res, next) => {
-   const { cedula } = req.params; // Cédula enviada por la URL
-   let { primer_nombre, segundo_nombre, primer_apellido, segundo_apellido } = req.body; // Datos enviados en el cuerpo
+   const { cedula } = req.params;
+   let { primer_nombre, segundo_nombre, primer_apellido, segundo_apellido } = req.body;
 
    try {
-      // 🔹 Validaciones mínimas
       if (!cedula || !primer_nombre || !primer_apellido) {
          return res.status(400).json({
             success: false,
@@ -132,11 +100,9 @@ export const updateEmpleadoByCedula = async (req, res, next) => {
          });
       }
 
-      // Si el dato existe quita los espacios sino dato = NULL
       segundo_nombre = segundo_nombre?.trim() || null;
       segundo_apellido = segundo_apellido?.trim() || null;
 
-      // 🔹 Llamada al modelo para actualizar el empleado
       const result = await EmpleadoModel.updateEmpleadoByCedula({
          cedula: cedula.trim(),
          primer_nombre: primer_nombre.trim().toUpperCase(),
@@ -145,7 +111,6 @@ export const updateEmpleadoByCedula = async (req, res, next) => {
          segundo_apellido: segundo_apellido ? segundo_apellido.trim().toUpperCase() : null
       });
 
-      // 🔹 Verifica si se actualizó algún registro
       if (result.affectedRows === 0) {
          return res.status(404).json({
             success: false,
@@ -153,14 +118,12 @@ export const updateEmpleadoByCedula = async (req, res, next) => {
          });
       }
 
-      // 🔹 Respuesta exitosa
       return res.status(200).json({
          success: true,
          message: "Empleado actualizado correctamente."
       });
 
    } catch (error) {
-      // Envía el error al manejador global
       next(error);
    }
 }
@@ -168,11 +131,6 @@ export const updateEmpleadoByCedula = async (req, res, next) => {
 /**
  * Elimina un empleado existente según su cédula.
  * @route DELETE /empleados/:cedula
- * 
- * @param {Object} req - Objeto de solicitud de Express.
- * @param {Object} res - Objeto de respuesta de Express.
- * @param {Function} next - Función para pasar al siguiente middleware.
- * @returns {void} Devuelve una respuesta JSON con el resultado de la eliminación.
  */
 export const deleteEmpleadoByCedula = async (req, res, next) => {
    const { cedula } = req.params;
@@ -180,7 +138,6 @@ export const deleteEmpleadoByCedula = async (req, res, next) => {
    try {
       const result = await EmpleadoModel.deleteEmpleadoByCedula(cedula);
 
-      // 🔹 Si no se encontró el empleado
       if (!result.success) {
          return res.status(404).json({
             success: false,
@@ -188,7 +145,6 @@ export const deleteEmpleadoByCedula = async (req, res, next) => {
          });
       }
 
-      // 🔹 Eliminación exitosa
       return res.status(200).json({
          success: true,
          message: result.message
@@ -197,4 +153,55 @@ export const deleteEmpleadoByCedula = async (req, res, next) => {
    } catch (error) {
       next(error);
    }
-};
+}
+
+/**
+ * Obtiene los resultados del empleado logueado
+ * @route GET /empleados/mis-resultados
+ */
+export const getMisResultados = async (req, res, next) => {
+   try {
+      const user = req.session.user;
+      
+      console.log('🔍 DEBUG - Datos COMPLETOS del usuario:', JSON.stringify(user, null, 2));
+      
+      if (user.rol !== 2) {
+         console.log('❌ ERROR - Rol incorrecto, debe ser 2 (empleado)');
+         return res.status(403).json({ 
+            success: false, 
+            message: "No tienes permisos para acceder a estos resultados." 
+         });
+      }
+
+      // ✅ SOLUCIÓN DEFINITIVA: Buscar empleado por NOMBRE
+      const empleado = await EmpleadoModel.getEmpleadoByNombre(user.nombre);
+      
+      if (!empleado || !empleado.cedula) {
+         console.log('❌ ERROR - No se encontró empleado con nombre:', user.nombre);
+         return res.status(403).json({ 
+            success: false, 
+            message: "No se encontró información del empleado." 
+         });
+      }
+
+      console.log('✅ DEBUG - Empleado encontrado:', empleado);
+      console.log('✅ DEBUG - Buscando resultados para cédula:', empleado.cedula);
+      
+      const resultados = await ResultadosModel.getTodosResultadosPorEmpleado(empleado.cedula);
+
+      console.log('✅ DEBUG - Resultados encontrados:', resultados.length, 'registros');
+
+      if (!Array.isArray(resultados) || resultados.length === 0) {
+         return res.status(404).json({ 
+            success: true, 
+            data: [], 
+            message: 'No se encontraron resultados para mostrar.' 
+         });
+      }
+
+      res.status(200).json({ success: true, data: resultados });
+   } catch (error) {
+      console.log('❌ ERROR en getMisResultados:', error);
+      next(error);
+   }
+}

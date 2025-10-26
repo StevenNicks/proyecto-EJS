@@ -154,8 +154,8 @@ export const register = async (req, res, next) => {
 }
 
 /**
- * Cierra la sesión del usuario actual.
- * @route POST /auth/logout
+ * Cierra la sesión del usuario y redirige al login
+ * @route GET /auth/logout
  * 
  * @param {Object} req - Objeto de solicitud HTTP (Express), contiene la sesión activa.
  * @param {Object} res - Objeto de respuesta HTTP (Express).
@@ -163,33 +163,23 @@ export const register = async (req, res, next) => {
  * 
  * @description
  * Este controlador:
- *  1. Verifica si existe una sesión activa.
- *  2. Destruye la sesión en el servidor.
- *  3. Elimina la cookie de sesión del cliente.
- *  4. Devuelve una respuesta JSON confirmando el cierre de sesión.
+ *  1. Destruye la sesión en el servidor.
+ *  2. Elimina la cookie de sesión del cliente.
+ *  3. Redirige al formulario de login.
  */
 export const logout = (req, res, next) => {
-   // 1️⃣ Verificar si hay sesión activa
-   if (!req.session.loggedin) {
-      return res.status(400).json({
-         success: false,
-         message: "No hay sesión activa para cerrar."
-      });
-   }
-
-   // 2️⃣ Destruir sesión
+   // 1️⃣ Destruir sesión
    req.session.destroy((err) => {
       if (err) {
-         return next(err); // pasa el error al middleware
+         console.error('Error al cerrar sesión:', err);
+         // Si hay error, igual redirigir al login
+         return res.redirect('/auth/login');
       }
 
-      // 3️⃣ Limpiar cookie de sesión
+      // 2️⃣ Limpiar cookie de sesión
       res.clearCookie('connect.sid'); // nombre por defecto usado por express-session
 
-      // 4️⃣ Responder al cliente
-      res.status(200).json({
-         success: true,
-         message: "Sesión cerrada correctamente."
-      });
+      // 3️⃣ REDIRIGIR AL LOGIN EN LUGAR DE ENVIAR JSON
+      return res.redirect('/auth/login');
    });
 };

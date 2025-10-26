@@ -28,15 +28,25 @@ export const renderResultados = async (req, res, next) => {
  */
 export const getAllResultadosByTamizajeId = async (req, res, next) => {
    const { id } = req.params;
+   const user = req.session.user;
 
    try {
-      const resultados = await ResultadoModel.getAllResultadosByTamizajeId(id);
+      let resultados;
+      
+      // ✅ EMPLEADO: Solo ve sus propios resultados
+      if (user.rol === 2) { // rol 2 = empleado
+         resultados = await ResultadoModel.getResultadosByEmpleadoAndTamizaje(user.empleado_cedula, id);
+      } 
+      // ✅ ADMIN y SUPERVISOR: Ven todos los resultados
+      else {
+         resultados = await ResultadoModel.getAllResultadosByTamizajeId(id);
+      }
 
       if (!Array.isArray(resultados) || resultados.length === 0) {
          return res.status(404).json({ message: 'No se encontraron registros.' });
       }
 
-      res.status(200).json({ success: true, data: resultados, user: req.session.user });
+      res.status(200).json({ success: true, data: resultados, user: user });
    } catch (error) {
       next(error);
    }
@@ -210,6 +220,33 @@ export const deleteResultadoById = async (req, res, next) => {
          success: true,
          message: result.message
       });
+   } catch (error) {
+      next(error);
+   }
+}
+/**
+ * Obtiene todos los resultados de un empleado (para vista de empleados)
+ * @route GET /resultados/empleado
+ */
+export const getResultadosEmpleado = async (req, res, next) => {
+   const user = req.session.user;
+
+   try {
+      // ✅ Solo empleados pueden acceder a esta ruta
+      if (user.rol !== 2) {
+         return res.status(403).json({ 
+            success: false, 
+            message: "Acceso denegado." 
+         });
+      }
+
+      const resultados = await ResultadoModel.getTodosResultadosPorEmpleado(user.empleado_cedula);
+
+      if (!Array.isArray(resultados) || resultados.length === 0) {
+         return res.status(404).json({ message: 'No se encontraron resultados.' });
+      }
+
+      res.status(200).json({ success: true, data: resultados });
    } catch (error) {
       next(error);
    }

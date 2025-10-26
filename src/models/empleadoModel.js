@@ -112,6 +112,26 @@ const EmpleadoModel = {
       } catch (error) {
          throw error;
       }
+   },
+
+   /**
+    * Obtiene un empleado por nombre (búsqueda más flexible)
+    */
+   getEmpleadoByNombre: async (nombre) => {
+      try {
+         // Extraer partes del nombre completo
+         const partesNombre = nombre.split(' ');
+         const primerNombre = partesNombre[0] || '';
+         const primerApellido = partesNombre[partesNombre.length - 2] || ''; // Penúltima parte
+         
+         const [rows] = await pool.query(
+            'SELECT * FROM empleados WHERE primer_nombre = ? AND primer_apellido = ?', 
+            [primerNombre, primerApellido]
+         );
+         return rows[0] || null;
+      } catch (error) {
+         throw error;
+      }
    }
 };
 

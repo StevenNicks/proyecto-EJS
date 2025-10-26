@@ -15,11 +15,11 @@ td {
 #example th.observacion-column,
 #example td.observacion-column {
    text-align: center !important;
-   white-space: nowrap !important; /* Evita que el texto se divida en varias líneas */
-   overflow: hidden !important; /* Oculta el texto que excede el ancho */
-   text-overflow: ellipsis !important; /* Muestra ... cuando el texto es demasiado largo */
-   max-width: 300px !important; /* Limita el ancho de la columna (ajusta según necesites) */
-   vertical-align: top !important; /* Mantiene la alineación vertical */
+   white-space: nowrap !important;
+   overflow: hidden !important;
+   text-overflow: ellipsis !important;
+   max-width: 300px !important;
+   vertical-align: top !important;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -33,10 +33,68 @@ input.no-arrow::-webkit-inner-spin-button {
 input.no-arrow[type="number"] {
    -moz-appearance: textfield;
    appearance: textfield;
-   /* estándar */
 }
 
 /* dato cedula en las tablas */
 .cedula-clickable {
    cursor: pointer;
+}
+
+/* Espaciado más compacto entre inputs en los formularios */
+#resultadoForm.row,
+#updateResultadoForm.row {
+   --bs-gutter-y: 0.25rem !important;
+}
+
+/* Estilos para tabla de resultados - Añadido el 25/10/2025 */
+.imc-color {
+   transition: background-color 0.3s;
+}
+
+.imc-color[data-imc^="18"],
+.imc-color[data-imc^="19"] {
+   background-color: #90ee90; /* Verde claro para bajo peso */
+}
+
+.imc-color[data-imc^="25"],
+.imc-color[data-imc^="26"] {
+   background-color: #ffa500; /* Naranja para sobrepeso */
+}
+
+.imc-color[data-imc^="30"],
+.imc-color[data-imc^="31"] {
+   background-color: #ff6347; /* Rojo para obesidad */
+}
+
+.pressure-color {
+   transition: background-color 0.3s;
+}
+
+.pressure-color[data-sistole^="14"][data-diastole^="9"] {
+   background-color: #ff6347; /* Rojo para hipertensión (e.g., 140/90) */
+}
+
+.oxygen-color {
+   transition: background-color 0.3s;
+}
+
+.oxygen-color[data-value^="90"],
+.oxygen-color[data-value^="91"] {
+   background-color: #ff6347; /* Rojo para oxigenación baja */
+}
+
+.oxygen-color[data-value^="95"] {
+   background-color: #90ee90; /* Verde para oxigenación normal */
+}
+
+.glucose-color {
+   transition: background-color 0.3s;
+}
+
+.glucose-color[data-value^="200"] {
+   background-color: #ff6347; /* Rojo para glucosa alta */
+}
+
+.glucose-color[data-value^="70"] {
+   background-color: #90ee90; /* Verde para glucosa normal */
 }

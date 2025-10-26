@@ -149,8 +149,9 @@ $(document).ready(function () {
       ajax: {
          url: `/resultados/data/tamizaje/${window.location.pathname.split('/').pop()}`,
          dataSrc: function (response) {
-            console.log(response);
+            console.log('Datos recibidos:', response);
             userRole = response.user?.rol;
+            console.log('Rol del usuario:', userRole);
             return response.data || [];
          },
          error: function (xhr) {
@@ -160,7 +161,10 @@ $(document).ready(function () {
          }
       },
       columns: [
-         { data: 'id', createdCell: (td) => $(td).addClass('bg-success text-white') },
+         { 
+            data: 'id', 
+            createdCell: (td) => $(td).addClass('bg-success text-white text-center')
+         },
          {
             data: 'empleado_cedula',
             createdCell: function (td, cellData, rowData, row, col) {
@@ -197,8 +201,8 @@ $(document).ready(function () {
             title: 'primer_nombre',
             data: 'primer_nombre',
             createdCell: function (td, cellData, rowData, row, col) {
-               let capitalized = cellData.toUpperCase();
-               $(td).text(capitalized);
+               let capitalized = cellData ? cellData.toUpperCase() : 'N/A';
+               $(td).text(capitalized).addClass('text-center');
             }
          },
          {
@@ -207,15 +211,15 @@ $(document).ready(function () {
             createdCell: function (td, cellData, rowData, row, col) {
                let value = (cellData || '').trim();
                let data = value ? value.toUpperCase() : 'N/A';
-               $(td).text(data);
+               $(td).text(data).addClass('text-center');
             }
          },
          {
             title: 'primer_apellido',
             data: 'primer_apellido',
             createdCell: function (td, cellData, rowData, row, col) {
-               let capitalized = cellData.toUpperCase();
-               $(td).text(capitalized);
+               let capitalized = cellData ? cellData.toUpperCase() : 'N/A';
+               $(td).text(capitalized).addClass('text-center');
             }
          },
          {
@@ -224,14 +228,30 @@ $(document).ready(function () {
             createdCell: function (td, cellData, rowData, row, col) {
                let value = (cellData || '').trim();
                let data = value ? value.toUpperCase() : 'N/A';
-               $(td).text(data);
+               $(td).text(data).addClass('text-center');
+            }
+         },
+         {
+            data: 'altura',
+            title: 'altura',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData) || 0;
+               $(td).css({ 'text-align': 'center' }).text(valor.toFixed(2));
+            }
+         },
+         {
+            data: 'peso',
+            title: 'peso',
+            createdCell: function (td, cellData) {
+               const valor = parseFloat(cellData) || 0;
+               $(td).css({ 'text-align': 'center' }).text(valor.toFixed(2));
             }
          },
          {
             data: 'IMC',
             title: 'IMC',
             createdCell: function (td, cellData) {
-               const valor = parseFloat(cellData);
+               const valor = parseFloat(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 18.5) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -240,15 +260,20 @@ $(document).ready(function () {
                else if (valor < 35) { color = '#F7A03C'; rango = 'Obeso I'; }
                else { color = '#F74D4D'; rango = 'Obeso II+'; }
 
-               $(td).css({ 'background-color': color, 'color': '#000', 'font-weight': 'bold', 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'color': '#000', 
+                  'font-weight': 'bold', 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor.toFixed(2)} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'sistole',
             title: 'Sistólica',
             createdCell: function (td, cellData) {
-               const valor = parseInt(cellData);
+               const valor = parseInt(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 90) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -257,15 +282,18 @@ $(document).ready(function () {
                else if (valor <= 160) { color = '#F7A03C'; rango = 'Alto'; }
                else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'diastole',
             title: 'Diastólica',
             createdCell: function (td, cellData) {
-               const valor = parseInt(cellData);
+               const valor = parseInt(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -274,15 +302,18 @@ $(document).ready(function () {
                else if (valor <= 100) { color = '#F7A03C'; rango = 'Alto'; }
                else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'pulso',
             title: 'Pulso',
             createdCell: function (td, cellData) {
-               const valor = parseInt(cellData);
+               const valor = parseInt(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 60) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -291,15 +322,18 @@ $(document).ready(function () {
                else if (valor <= 140) { color = '#F7A03C'; rango = 'Alto'; }
                else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'oxigenacion',
             title: 'Oxigenación',
             createdCell: function (td, cellData) {
-               const valor = parseFloat(cellData);
+               const valor = parseFloat(cellData) || 0;
                let color = '', rango = '';
 
                if (valor >= 95) { color = '#3AD98C'; rango = 'Normal'; }
@@ -307,15 +341,18 @@ $(document).ready(function () {
                else if (valor >= 85) { color = '#F7A03C'; rango = 'Bajo'; }
                else { color = '#F74D4D'; rango = 'Muy Bajo'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor.toFixed(2)} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'glucosa',
             title: 'Glucosa',
             createdCell: function (td, cellData) {
-               const valor = parseFloat(cellData);
+               const valor = parseFloat(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 70) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -324,15 +361,18 @@ $(document).ready(function () {
                else if (valor <= 220) { color = '#F7A03C'; rango = 'Alto'; }
                else { color = '#F74D4D'; rango = 'Muy Alto'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor.toFixed(2)} <br><small>${rango}</small>`);
             }
          },
          {
             data: 'temperatura',
             title: 'Temperatura',
             createdCell: function (td, cellData) {
-               const valor = parseFloat(cellData);
+               const valor = parseFloat(cellData) || 0;
                let color = '', rango = '';
 
                if (valor < 36) { color = '#3A9AD9'; rango = 'Bajo'; }
@@ -341,8 +381,11 @@ $(document).ready(function () {
                else if (valor <= 39.5) { color = '#F7A03C'; rango = 'Fiebre Alta'; }
                else { color = '#F74D4D'; rango = 'Fiebre Muy Alta'; }
 
-               $(td).css({ 'background-color': color, 'text-align': 'center' })
-                  .html(`${valor} <br><small>${rango}</small>`);
+               $(td).css({ 
+                  'background-color': color, 
+                  'text-align': 'center',
+                  'border': '2px solid #000'
+               }).html(`${valor.toFixed(2)} <br><small>${rango}</small>`);
             }
          },
          {
@@ -351,7 +394,7 @@ $(document).ready(function () {
             className: 'observacion-column',
             createdCell: function (td, cellData) {
                $(td).on('click', function () {
-                  alert(cellData);
+                  alert(cellData || 'Sin observaciones');
                });
             }
          },
@@ -383,16 +426,31 @@ $(document).ready(function () {
                return data;
             }
          },
-         { title: 'Creado', data: 'created_at' },
-         { title: 'Actualizado', data: 'updated_at' }
+         { 
+            title: 'Creado', 
+            data: 'created_at',
+            createdCell: (td) => $(td).addClass('text-center')
+         },
+         { 
+            title: 'Actualizado', 
+            data: 'updated_at',
+            createdCell: (td) => $(td).addClass('text-center')
+         }
       ],
       drawCallback: function () {
          const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
          tooltipTriggerList.map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl))
       },
       initComplete: function () {
-         if (userRole !== 1 && userRole !== 3) {
-            tableResultados.column(16).visible(false);
+         // ✅ EMPLEADO: Oculta SOLO columnas de acciones, NO las de datos de salud
+         if (userRole === 2) {
+            console.log('Ocultando columnas de acciones para empleado');
+            tableResultados.column(17).visible(false); // Columna Actualizar
+            tableResultados.column(18).visible(false); // Columna Eliminar
+            tableResultados.column(19).visible(false); // Columna Creado
+            tableResultados.column(20).visible(false); // Columna Actualizado
+         } else {
+            console.log('Mostrando todas las columnas para admin/supervisor');
          }
       }
    });

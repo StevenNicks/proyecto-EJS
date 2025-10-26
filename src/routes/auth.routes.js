@@ -18,12 +18,14 @@ const router = Router();
  *  - POST /login       → Procesa las credenciales del usuario.
  *  - GET  /register    → Renderiza el formulario de registro.
  *  - POST /register    → Procesa el registro de un nuevo usuario.
- *  - POST /logout      → Cierra la sesión activa del usuario.
+ *  - GET  /logout      → Cierra la sesión activa del usuario. ✅ AGREGAR ESTA LÍNEA
+ *  - POST /logout      → Cierra la sesión activa del usuario. ✅ MANTENER POST TAMBIÉN
  */
 router.get("/login", renderLogin);
 router.post("/login", login);
 router.get("/register", renderRegister);
 router.post("/register", register);
-router.post("/logout", logout);
+router.get("/logout", logout); // ✅ AGREGAR ESTA LÍNEA
+router.post("/logout", logout); // ✅ MANTENER LA EXISTENTE
 
 export default router;

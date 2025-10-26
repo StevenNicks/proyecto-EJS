@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getResultadosEmpleado } from '../controllers/resultado.controller.js';
 import {
    renderResultados,
    getAllResultadosByTamizajeId,
@@ -18,5 +19,6 @@ router.post('/', authMiddleware, createResultado);
 router.get('/:id', authMiddleware, getResultadoById);
 router.put('/:id', authMiddleware, updateResultadoById);
 router.delete('/:id', authMiddleware, deleteResultadoById);
+router.get('/empleado', authMiddleware, getResultadosEmpleado);
 
 export default router;

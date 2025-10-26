@@ -1,82 +1,114 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm bg-body-tertiary rounded">
-   <div class="container-fluid">
-      <a class="navbar-brand mx-3 d-flex align-items-center" href="#">
-         <img src="/favicon.ico" alt="Logo" class="img-fluid me-2" width="24" height="24">
+<header>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/tamizajes">
+        <i data-lucide="stethoscope" width="28" height="28" class="me-2"></i>
+        Sistema de Tamizajes
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-               <a class="nav-link" aria-current="tamizajes" href="/tamizajes">Tamizajes</a>
-            </li>
-            <!-- <li class="nav-item">
-               <a class="nav-link" aria-current="resultados" href="/resultados">Resultados</a>
-            </li> -->
-            <li class="nav-item">
-               <a class="nav-link" aria-current="empleados" href="/empleados">Empleados</a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link" aria-current="usuarios" href="/usuarios">Usuarios</a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link" aria-current="roles" href="/roles">Roles</a>
-            </li>
-         </ul>
-         <!-- Segundo dropdown (alineado a la derecha) -->
-         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <% if (user) { %>
+            <!-- ✅ ADMIN y SUPERVISOR: Ven todo el menú -->
+            <% if (user.rol === 1 || user.rol === 3) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/tamizajes">
+                  <i data-lucide="clipboard-list" width="18" height="18" class="me-1"></i>
+                  Tamizajes
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/empleados">
+                  <i data-lucide="users" width="18" height="18" class="me-1"></i>
+                  Empleados
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/usuarios">
+                  <i data-lucide="user-cog" width="18" height="18" class="me-1"></i>
+                  Usuarios
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/roles">
+                  <i data-lucide="shield" width="18" height="18" class="me-1"></i>
+                  Roles
+                </a>
+              </li>
+            <% } %>
+            
+            <!-- ✅ EMPLEADO: Solo ve "Mis Tamizajes" -->
+            <% if (user.rol === 2) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/tamizajes">
+                  <i data-lucide="clipboard-list" width="18" height="18" class="me-1"></i>
+                  Mis Tamizajes
+                </a>
+              </li>
+            <% } %>
+          <% } %>
+        </ul>
+        
+        <ul class="navbar-nav">
+          <% if (user) { %>
             <li class="nav-item dropdown">
-               <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  <i data-lucide="user-round" width="16" height="16" class="me-1"></i>
-                  <%= user?.nombre || "Usuario" %>
-               </a>
-               <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="#">Perfil</a></li>
-                  <li><a class="dropdown-item" href="#">Configuración</a></li>
-                  <li>
-                     <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item text-danger" href="#" id="logoutBtn">Cerrar sesión</a></li>
-               </ul>
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i data-lucide="user" width="18" height="18" class="me-1"></i>
+                <%= user.email %>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="#" id="logoutBtn">
+                    <i data-lucide="log-out" width="16" height="16" class="me-1"></i>
+                    Cerrar sesión
+                  </a>
+                </li>
+              </ul>
             </li>
-         </ul>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/login">
+                <i data-lucide="log-in" width="18" height="18" class="me-1"></i>
+                Iniciar sesión
+              </a>
+            </li>
+          <% } %>
+        </ul>
       </div>
-   </div>
-</nav>
+    </div>
+  </nav>
+</header>
 
 <script>
-   document.addEventListener("DOMContentLoaded", () => {
-      const logoutLink = document.querySelector("#logoutBtn");
-
-      if (logoutLink) {
-         logoutLink.addEventListener("click", async (e) => {
-            e.preventDefault();
-
-            const confirmLogout = confirm("¿Deseas cerrar sesión?");
-            if (!confirmLogout) return;
-
-            try {
-               const response = await fetch("/auth/logout", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-               });
-
-               const data = await response.json();
-
-               if (data.success) {
-                  window.location.href = "/auth/login";
-               } else {
-                  alert(data.message || "Error al cerrar sesión.");
-                  window.location.href = "/auth/login";
-               }
-            } catch (error) {
-               console.error("Error al cerrar sesión:", error);
-               alert("Ocurrió un error al cerrar sesión.");
-            }
-         });
-      }
-   });
+  // Inicializar íconos Lucide
+  document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
+    // ✅ SCRIPT SIMPLIFICADO PARA LOGOUT
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: "¿Estás seguro de que quieres salir?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, cerrar sesión',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // ✅ REDIRECCIÓN DIRECTA - AHORA FUNCIONARÁ
+            window.location.href = '/auth/logout';
+          }
+        });
+      });
+    }
+  });
 </script>

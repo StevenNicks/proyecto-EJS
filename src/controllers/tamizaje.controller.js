@@ -11,6 +11,18 @@ import TamizajeModel from '../models/tamizajeModel.js';
  */
 export const renderTamizajes = async (req, res, next) => {
    try {
+      const user = req.session.user;
+      
+      // ✅✅✅ NUEVO CÓDIGO AGREGADO: Redirigir empleados a su vista
+      if (user.rol === 2) {
+         return res.render("tamizajes/empleado", {
+            title: "Mis Resultados",
+            user: user
+         });
+      }
+      // ✅✅✅ FIN DE NUEVO CÓDIGO
+      
+      // ✅ CÓDIGO EXISTENTE (para admin/supervisor)
       res.render("tamizajes/index", {
          title: "Tamizajes",
          user: req.session.user
