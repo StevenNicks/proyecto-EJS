@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<body>
+    <div class="container-fluid container-md py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <!-- Card del Perfil -->
+                <div class="custom-card bg-light p-4 border border-2 rounded shadow-sm">
+                    <div class="text-center mb-4">
+                        <i data-lucide="user-circle" width="64" height="64" class="text-primary"></i>
+                        <h2 class="mt-3">Mi Perfil</h2>
+                        <p class="text-muted">Información personal</p>
+                    </div>
+
+                    <!-- Información del Usuario -->
+                    <div class="profile-info">
+                        <div class="info-row d-flex justify-content-between py-3 border-bottom">
+                            <span class="fw-semibold">Nombre:</span>
+                            <span id="profile-nombre"><%= user.nombre %></span>
+                        </div>
+                        <div class="info-row d-flex justify-content-between py-3 border-bottom">
+                            <span class="fw-semibold">Email:</span>
+                            <span class="text-muted" id="profile-email">
+                                <%
+                                // ✅ FUNCIÓN PARA OCULTAR EL EMAIL (SE MUESTRA PARCIALMENTE)
+                                function ocultarEmail(email) {
+                                    if (!email) return '';
+                                    const [username, domain] = email.split('@');
+                                    const oculto = username.substring(0, 1) + '•••••' + 
+                                                   username.substring(username.length-1) + 
+                                                   '@••••' + 
+                                                   domain.substring(domain.lastIndexOf('.'));
+                                    return oculto;
+                                }
+                                %>
+                                <%= ocultarEmail(user.email) %>
+                            </span>
+                        </div>
+                        <div class="info-row d-flex justify-content-between py-3 border-bottom">
+                            <span class="fw-semibold">Rol:</span>
+                            <span id="profile-rol">
+                                <%
+                                // ✅ FUNCIÓN PARA OBTENER NOMBRE DEL ROL
+                                function obtenerNombreRol(rolId) {
+                                    const roles = {
+                                        1: 'Administrador',
+                                        2: 'Empleado', 
+                                        3: 'Supervisor'
+                                    };
+                                    return roles[rolId] || 'Desconocido';
+                                }
+                                %>
+                                <%= obtenerNombreRol(user.rol) %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- ✅ CORREGIDO: SOLO UN BOTÓN "VOLVER AL INICIO" -->
+                    <div class="profile-actions mt-4">
+                        <a href="/tamizajes" class="btn btn-primary w-100">
+                            <i data-lucide="home" width="16" height="16"></i>
+                            Volver al inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/scripts') %>
+    <script>
+        // Inicializar íconos
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

@@ -3,57 +3,436 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %>
 
+<head>
+    <style>
+        /* ✅ ESTILOS PARA HEADER DE TABLA ESTÁTICO */
+        .table-container {
+            max-height: calc(100vh - 140px);
+            overflow: auto;
+            position: relative;
+        }
+        
+        .table-fixed-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #0d6efd;
+            color: white;
+        }
+        
+        .table-fixed-header th {
+            position: sticky;
+            top: 0;
+            background-color: #0d6efd;
+            color: white;
+            z-index: 20;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        /* ✅ MEJORAR VISUALIZACIÓN DE LA TABLA */
+        .table-responsive {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+        
+        /* ✅ ESTILOS PARA BOTONES DE GRÁFICA */
+        .btn-grafica {
+            padding: 4px 8px;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
 <body>
-   <div class="container-fluid container-md py-4">
-      <div class="row g-3 mb-3">
-         <div class="col-12">
-            <div class="custom-card bg-light p-4 border border-2 rounded">
-               <h1 class="h3 mb-4 text-primary">
-                  <i data-lucide="clipboard-check" width="32" height="32" class="me-2"></i>
-                  Mis Resultados de Tamizajes
-               </h1>
+   <!-- ✅ MODIFICADO: FULL-SCREEN SIN MÁRGENES -->
+   <div class="container-fluid px-0">
+      <!-- Header fijo -->
+      <div class="bg-primary text-white py-3 sticky-top shadow-sm" style="z-index: 1030;">
+         <div class="container-fluid">
+            <div class="row align-items-center">
+               <div class="col">
+                  
+               </div>
             </div>
          </div>
       </div>
 
-      <!-- Tabla de resultados del empleado -->
-      <div class="row g-3 mb-3">
-         <div class="col-12">
-            <div class="custom-card bg-light p-3 border border-2 rounded">
-               <div class="table-responsive">
-                  <table id="tablaMisResultados" class="table table-bordered table-striped-columns table-hover">
-                     <thead>
-                        <tr>
-                           <th scope="col">#</th>
-                           <th scope="col">Tamizaje ID</th>
-                           <th scope="col">Tamizaje</th>
-                           <th scope="col">Fecha</th>
-                           <th scope="col">Altura</th>
-                           <th scope="col">Peso</th>
-                           <th scope="col">IMC</th>
-                           <th scope="col">Sistólica</th>
-                           <th scope="col">Diastólica</th>
-                           <th scope="col">Pulso</th>
-                           <th scope="col">Oxigenación</th>
-                           <th scope="col">Glucosa</th>
-                           <th scope="col">Temperatura</th>
-                           <th scope="col">Observación</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <!-- Los datos se cargan dinámicamente con JavaScript -->
-                     </tbody>
-                  </table>
+      <!-- ✅ MODIFICADO: TABLA CON HEADER ESTÁTICO -->
+      <div class="container-fluid px-3 py-3">
+         <div class="custom-card bg-light border border-2 rounded">
+            <div class="table-container">
+               <table id="tablaMisResultados" class="table table-bordered table-striped table-hover mb-0">
+                  <thead class="table-fixed-header">
+   <tr>
+      <th scope="col">#</th>
+      <th scope="col">Tamizaje ID</th>
+      <th scope="col">Tipo Tamizaje</th>
+      <th scope="col">Fecha</th>
+      <th scope="col">Cédula</th>
+      <th scope="col">Agencia</th>
+      <th scope="col">Altura (cm)</th>
+      <th scope="col">Peso (kg)</th>
+      <th scope="col">IMC</th>
+      <th scope="col">Sistólica</th>
+      <th scope="col">Diastólica</th>
+      <th scope="col">Pulso</th>
+      <th scope="col">Oxigenación (%)</th>
+      <th scope="col">Glucosa (mg/dL)</th>
+      <th scope="col">Temperatura (°C)</th>
+      <!-- ❌ QUITAMOS ESTA LÍNEA: <th scope="col">Observación</th> -->
+      <th scope="col">Estado IMC</th>
+      <th scope="col">Seguimientos</th>
+      <th scope="col">Gráfica</th>
+   </tr>
+</thead>
+                  <tbody>
+                     <!-- Los datos se cargan dinámicamente con JavaScript -->
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <!-- ✅ MODAL DE GRÁFICAS PROFESIONALES -->
+   <div class="modal fade" id="modalGraficas" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalGraficasLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+         <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+               <h1 class="modal-title fs-5" id="modalGraficasLabel">
+                  <i data-lucide="bar-chart-3" width="20" height="20" class="me-2"></i>
+                  Análisis Gráfico - Tamizaje #<span id="graficaTamizajeId">0</span>
+               </h1>
+               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <!-- Información del paciente -->
+               <div class="row mb-4">
+                  <div class="col-md-6">
+                     <div class="card border-0 bg-light">
+                        <div class="card-body">
+                           <h6 class="card-title text-muted">PACIENTE</h6>
+                           <h4 class="card-text" id="graficaPacienteNombre">Cargando...</h4>
+                           <p class="card-text text-muted mb-0" id="graficaPacienteInfo">Cargando...</p>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="card border-0 bg-light">
+                        <div class="card-body">
+                           <h6 class="card-title text-muted">INFORMACIÓN DEL REGISTRO</h6>
+                           <div class="d-flex justify-content-between">
+                              <div>
+                                 <h4 class="text-primary" id="graficaFecha">-</h4>
+                                 <small class="text-muted">Fecha</small>
+                              </div>
+                              <div>
+                                 <h4 class="text-success" id="graficaIMC">0</h4>
+                                 <small class="text-muted">IMC</small>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
                </div>
+
+               <!-- Gráficas -->
+               <div class="row g-3">
+                  <!-- Gráfica 1: Presión Arterial -->
+                  <div class="col-md-6">
+                     <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white">
+                           <h6 class="mb-0">
+                              <i data-lucide="activity" width="16" height="16" class="me-2 text-danger"></i>
+                              Presión Arterial
+                           </h6>
+                        </div>
+                        <div class="card-body">
+                           <canvas id="graficaPresion" height="200"></canvas>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Gráfica 2: Métricas de Salud -->
+                  <div class="col-md-6">
+                     <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white">
+                           <h6 class="mb-0">
+                              <i data-lucide="heart" width="16" height="16" class="me-2 text-primary"></i>
+                              Métricas de Salud
+                           </h6>
+                        </div>
+                        <div class="card-body">
+                           <canvas id="graficaMetricas" height="200"></canvas>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Gráfica 3: Semáforo de Salud -->
+                  <div class="col-12">
+                     <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white">
+                           <h6 class="mb-0">
+                              <i data-lucide="alert-triangle" width="16" height="16" class="me-2 text-warning"></i>
+                              Semáforo de Salud
+                           </h6>
+                        </div>
+                        <div class="card-body">
+                           <div class="row text-center" id="semaforoSalud">
+                              <!-- Se llena dinámicamente -->
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
          </div>
       </div>
    </div>
 
    <%- include('../partials/scripts') %>
+   <!-- ✅ INCLUIR CHART.JS PARA GRÁFICAS -->
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <script src="/js/empleado.js"></script>
    <script>
       lucide.createIcons();
+
+      // ✅ CONFIGURACIÓN DE GRÁFICAS PROFESIONALES
+      let graficas = {};
+
+      // Función para abrir gráficas de un registro específico
+      function abrirGraficasRegistro(registro) {
+         console.log('Abriendo gráficas para:', registro);
+         
+         // Actualizar información del modal
+         document.getElementById('graficaTamizajeId').textContent = registro.tamizaje_id || 'N/A';
+         document.getElementById('graficaPacienteNombre').textContent = registro.nombre_empleado || 'Paciente';
+         document.getElementById('graficaPacienteInfo').textContent = `Cédula: ${registro.empleado_cedula || registro.cedula || 'N/A'} | Agencia: ${registro.agencia || 'CALI'}`;
+         document.getElementById('graficaFecha').textContent = registro.fecha_formateada || '-';
+         document.getElementById('graficaIMC').textContent = registro.IMC || '0';
+         
+         // Crear gráficas con los datos del registro
+         crearGraficaPresionIndividual(registro);
+         crearGraficaMetricasIndividual(registro);
+         crearSemaforoSalud(registro);
+         
+         // Mostrar el modal
+         const modalGraficas = new bootstrap.Modal(document.getElementById('modalGraficas'));
+         modalGraficas.show();
+      }
+
+      function crearGraficaPresionIndividual(registro) {
+         const ctx = document.getElementById('graficaPresion').getContext('2d');
+         
+         if (graficas.presion) graficas.presion.destroy();
+         
+         graficas.presion = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+               labels: ['Sistólica', 'Diastólica'],
+               datasets: [{
+                  data: [
+                     parseFloat(registro.sistole) || 0,
+                     parseFloat(registro.diastole) || 0
+                  ],
+                  backgroundColor: [
+                     '#dc3545',  // Rojo para sistólica
+                     '#0d6efd'   // Azul para diastólica
+                  ],
+                  borderWidth: 2,
+                  borderColor: '#fff'
+               }]
+            },
+            options: {
+               responsive: true,
+               plugins: {
+                  legend: {
+                     position: 'bottom'
+                  },
+                  tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                           return `${context.label}: ${context.raw} mmHg`;
+                        }
+                     }
+                  }
+               },
+               cutout: '60%'
+            }
+         });
+      }
+
+      function crearGraficaMetricasIndividual(registro) {
+         const ctx = document.getElementById('graficaMetricas').getContext('2d');
+         
+         if (graficas.metricas) graficas.metricas.destroy();
+         
+         // Definir rangos normales para cada métrica
+         const metricas = [
+            {
+               label: 'Pulso',
+               valor: parseFloat(registro.pulso) || 0,
+               normal: [60, 100],
+               color: '#0d6efd'
+            },
+            {
+               label: 'Oxigenación',
+               valor: parseFloat(registro.oxigenacion) || 0,
+               normal: [95, 100],
+               color: '#198754'
+            },
+            {
+               label: 'Glucosa',
+               valor: parseFloat(registro.glucosa) || 0,
+               normal: [70, 100],
+               color: '#6f42c1'
+            },
+            {
+               label: 'Temperatura',
+               valor: parseFloat(registro.temperatura) || 0,
+               normal: [36.0, 37.2],
+               color: '#fd7e14'
+            }
+         ];
+
+         graficas.metricas = new Chart(ctx, {
+            type: 'bar',
+            data: {
+               labels: metricas.map(m => m.label),
+               datasets: [{
+                  label: 'Valor Actual',
+                  data: metricas.map(m => m.valor),
+                  backgroundColor: metricas.map(m => m.color),
+                  borderColor: metricas.map(m => m.color),
+                  borderWidth: 1
+               }, {
+                  label: 'Límite Superior Normal',
+                  data: metricas.map(m => m.normal[1]),
+                  type: 'line',
+                  borderColor: '#28a745',
+                  borderWidth: 2,
+                  pointStyle: false,
+                  fill: false
+               }, {
+                  label: 'Límite Inferior Normal',
+                  data: metricas.map(m => m.normal[0]),
+                  type: 'line',
+                  borderColor: '#dc3545',
+                  borderWidth: 2,
+                  pointStyle: false,
+                  fill: false
+               }]
+            },
+            options: {
+               responsive: true,
+               scales: {
+                  y: {
+                     beginAtZero: true,
+                     title: {
+                        display: true,
+                        text: 'Valores'
+                     }
+                  }
+               },
+               plugins: {
+                  tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                           if (context.datasetIndex === 0) {
+                              const metrica = metricas[context.dataIndex];
+                              return `${metrica.label}: ${context.raw} (Normal: ${metrica.normal[0]}-${metrica.normal[1]})`;
+                           }
+                           return `${context.dataset.label}: ${context.raw}`;
+                        }
+                     }
+                  }
+               }
+            }
+         });
+      }
+
+      function crearSemaforoSalud(registro) {
+         const semaforo = document.getElementById('semaforoSalud');
+         
+         const metricas = [
+            {
+               nombre: 'Sistólica',
+               valor: parseFloat(registro.sistole) || 0,
+               unidad: 'mmHg',
+               rangos: { bueno: [90, 120], alerta: [121, 139], peligro: [140, 999] }
+            },
+            {
+               nombre: 'Diastólica',
+               valor: parseFloat(registro.diastole) || 0,
+               unidad: 'mmHg',
+               rangos: { bueno: [60, 80], alerta: [81, 89], peligro: [90, 999] }
+            },
+            {
+               nombre: 'IMC',
+               valor: parseFloat(registro.IMC) || 0,
+               unidad: 'kg/m²',
+               rangos: { bueno: [18.5, 24.9], alerta: [25, 29.9], peligro: [30, 999] }
+            },
+            {
+               nombre: 'Glucosa',
+               valor: parseFloat(registro.glucosa) || 0,
+               unidad: 'mg/dL',
+               rangos: { bueno: [70, 99], alerta: [100, 125], peligro: [126, 999] }
+            }
+         ];
+
+         semaforo.innerHTML = metricas.map(metrica => {
+            const estado = getEstadoMetrica(metrica.valor, metrica.rangos);
+            return `
+               <div class="col-md-3">
+                  <div class="card border-0 ${estado.clase}">
+                     <div class="card-body text-center">
+                        <h6>${metrica.nombre}</h6>
+                        <h3 class="${estado.texto}">${metrica.valor}</h3>
+                        <small class="text-muted">${metrica.unidad}</small>
+                        <div class="mt-2">${estado.badge}</div>
+                     </div>
+                  </div>
+               </div>
+            `;
+         }).join('');
+      }
+
+      function getEstadoMetrica(valor, rangos) {
+         if (valor >= rangos.peligro[0]) {
+            return {
+               clase: 'bg-danger bg-opacity-10',
+               texto: 'text-danger',
+               badge: '<span class="badge bg-danger">ALTO RIESGO</span>'
+            };
+         }
+         if (valor >= rangos.alerta[0]) {
+            return {
+               clase: 'bg-warning bg-opacity-10',
+               texto: 'text-warning',
+               badge: '<span class="badge bg-warning">MODERADO</span>'
+            };
+         }
+         if (valor >= rangos.bueno[0]) {
+            return {
+               clase: 'bg-success bg-opacity-10',
+               texto: 'text-success',
+               badge: '<span class="badge bg-success">NORMAL</span>'
+            };
+         }
+         return {
+            clase: 'bg-info bg-opacity-10',
+            texto: 'text-info',
+            badge: '<span class="badge bg-info">BAJO</span>'
+         };
+      }
    </script>
 </body>
 </html>

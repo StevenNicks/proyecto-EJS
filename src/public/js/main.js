@@ -143,3 +143,37 @@ $(document).on('click', '.cedula-clickable', function () {
       }, 1000);
    });
 });
+
+// ✅ NUEVA FUNCIONALIDAD: PERSISTENCIA DE SESIÓN
+// ================================================
+
+// 🔐 PERSISTENCIA DE SESIÓN - MANTENER SESIÓN ABIERTA
+$(document).ready(function() {
+    // Verificar si hay sesión activa al cargar la página
+    verificarSesionPersistente();
+});
+
+function verificarSesionPersistente() {
+    const sessionActive = localStorage.getItem('sessionActive');
+    
+    if (sessionActive === 'true') {
+        console.log('✅ Sesión persistente activa');
+        // La sesión se mantiene, no es necesario hacer nada
+    }
+}
+
+// Guardar sesión en localStorage después del login exitoso
+function guardarSesionPersistente() {
+    localStorage.setItem('sessionActive', 'true');
+    console.log('✅ Sesión guardada en localStorage');
+}
+
+// Limpiar sesión de localStorage (al hacer logout)
+function limpiarSesionPersistente() {
+    localStorage.removeItem('sessionActive');
+    console.log('✅ Sesión eliminada de localStorage');
+}
+
+// ✅ ESTA FUNCIÓN SE DEBE LLAMAR DESPUÉS DE UN LOGIN EXITOSO
+// Ejemplo: En tu archivo de login, después del login exitoso, llama:
+// guardarSesionPersistente();

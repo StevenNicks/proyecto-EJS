@@ -242,7 +242,7 @@
                   </div>
          </div>
 
-         <%- include('../partials/scripts') %>
+                  <%- include('../partials/scripts') %>
             <script src="/js/resultados.js"></script>
             <script>
                $(document).ready(function () {
@@ -253,7 +253,65 @@
                   // Actualizar el contenido del <span> dentro de la tarjeta
                   $('#codigoTamizaje').text(number);
                });
+
+               // ✅ NUEVO: CÁLCULO AUTOMÁTICO DEL IMC
+               function calcularIMC() {
+                  const peso = parseFloat(document.getElementById('peso').value);
+                  const altura = parseFloat(document.getElementById('altura').value);
+                  
+                  if (peso && altura) {
+                     // Convertir altura de cm a metros
+                     const alturaMetros = altura / 100;
+                     // Calcular IMC: peso (kg) / (altura (m) ^ 2)
+                     const imc = peso / (alturaMetros * alturaMetros);
+                     // Mostrar IMC con 2 decimales
+                     document.getElementById('IMC').value = imc.toFixed(2);
+                  }
+               }
+
+               function calcularIMCUpdate() {
+                  const peso = parseFloat(document.getElementById('update_peso').value);
+                  const altura = parseFloat(document.getElementById('update_altura').value);
+                  
+                  if (peso && altura) {
+                     // Convertir altura de cm a metros
+                     const alturaMetros = altura / 100;
+                     // Calcular IMC: peso (kg) / (altura (m) ^ 2)
+                     const imc = peso / (alturaMetros * alturaMetros);
+                     // Mostrar IMC con 2 decimales
+                     document.getElementById('update_IMC').value = imc.toFixed(2);
+                  }
+               }
+
+               // ✅ AGREGAR EVENT LISTENERS PARA CÁLCULO AUTOMÁTICO
+               document.addEventListener('DOMContentLoaded', function() {
+                  // Para el modal de CREAR
+                  const pesoInput = document.getElementById('peso');
+                  const alturaInput = document.getElementById('altura');
+                  
+                  if (pesoInput && alturaInput) {
+                     pesoInput.addEventListener('input', calcularIMC);
+                     alturaInput.addEventListener('input', calcularIMC);
+                  }
+
+                  // Para el modal de ACTUALIZAR
+                  const updatePesoInput = document.getElementById('update_peso');
+                  const updateAlturaInput = document.getElementById('update_altura');
+                  
+                  if (updatePesoInput && updateAlturaInput) {
+                     updatePesoInput.addEventListener('input', calcularIMCUpdate);
+                     updateAlturaInput.addEventListener('input', calcularIMCUpdate);
+                  }
+               });
+
+               // ✅ OPCIÓN ALTERNATIVA: También calcular cuando el modal se abre
+               $('#createResultadoModal').on('shown.bs.modal', function () {
+                  calcularIMC(); // Calcular IMC inicial si hay valores
+               });
+
+               $('#updateResultadoModal').on('shown.bs.modal', function () {
+                  calcularIMCUpdate(); // Calcular IMC inicial si hay valores
+               });
             </script>
       </body>
-
 </html>
